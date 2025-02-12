@@ -6,51 +6,51 @@
     <title>Recette</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- <style> -->
-        /* body { */
-            /* background-color: #f8f9fa; */
-        /* } */
-        /* .recipe-container { */
-            /* max-width: 800px; */
-            /* margin: 20px auto; */
-            /* background: white; */
-            /* padding: 20px; */
-            /* border-radius: 10px; */
-            /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); */
-        /* } */
-        /* .recipe-image { */
-            /* width: 100%; */
-            /* height: 300px; */
-            /* object-fit: cover; */
-            /* border-radius: 10px; */
-        /* } */
-        /* .like-btn, .save-btn, .download-btn, .back-btn, .subscribe-btn { */
-            /* cursor: pointer; */
-        /* } */
-        /* .like-btn:hover, .save-btn:hover, .download-btn:hover, .back-btn:hover { */
-            /* color: #ff6f61; */
-        /* } */
-        /* .subscribe-btn { */
-            /* background-color: #ff6f61; */
-        /* } */
-        /* .subscribe-btn:hover { */
-            /* background-color: #e05a50; */
-        /* } */
-        /* h3, h5 { */
-            /* color: #ff6f61; */
-        /* } */
-        /* .btn { */
-            /* background-color: #ff6f61; */
-        /* } */
-        /* .btn:hover { */
-            /* background-color: #e05a50; */
-        /* } */
-        /* .icon-group { */
-            /* display: flex; */
-            /* align-items: center; */
-            /* gap: 15px; */
-        /* } */
-    /* </style> */
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .recipe-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .recipe-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .like-btn, .save-btn, .download-btn, .back-btn, .subscribe-btn {
+            cursor: pointer;
+        }
+        .like-btn:hover, .save-btn:hover, .download-btn:hover, .back-btn:hover {
+            color: #ff6f61;
+        }
+        .subscribe-btn {
+            background-color: #ff6f61;
+        }
+        .subscribe-btn:hover {
+            background-color: #e05a50;
+        }
+        h3, h5 {
+            color: #ff6f61;
+        }
+        .btn {
+            background-color: #ff6f61;
+        }
+        .btn:hover {
+            background-color: #e05a50;
+        }
+        .icon-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+    </style>
 </head>
 <body>
     <div class="container recipe-container">
