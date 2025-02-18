@@ -13,7 +13,8 @@
 }
 .sidebar .profile {
     margin-bottom: 20px;
-    text-align: center;
+    text-align: left;
+    
 }
 .sidebar img {
     border-radius: 50%;
@@ -26,8 +27,8 @@
 .sidebar ul li a {
     color: #fff;
     text-decoration: none;
-    padding: 15px;
-    display: block;
+    padding: 5px;
+    display: flex;
     transition: background-color 0.3s;
 }
 .sidebar ul li a:hover {
@@ -69,10 +70,20 @@
 .card:hover {
     transform: scale(1.05);
 }
+/* */
 .view-more {
     text-align: center;
-    margin-top: 10px;
+    margin-top: 20px;
 }
+.view-more a {
+    text-decoration: none;
+    color: #000;
+    font-size: 24px;
+}
+.view-more a:hover {
+    color: #f00;
+}
+/* */
 .btn-floating {
     position: fixed;
     bottom: 30px;

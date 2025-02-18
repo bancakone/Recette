@@ -3,189 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application de Recettes</title>
+    <title>Détails de la Recette</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Reset des marges et paddings */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            background-color: #f4f4f4;
+        }
 
-/* Style global */
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    background-color: #f4f4f4;
-}
+        /* Sidebar */
+        #sidebar {
+            width: 250px;
+            background-color: #333;
+            color: white;
+            padding-top: 20px;
+            position: fixed;
+            height: 100%;
+        }
 
-/* En-tête */
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        #sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            display: block;
+            transition: background-color 0.3s;
+        }
 
-header .logo {
-    font-size: 1.8rem;
-    font-weight: bold;
-}
+        #sidebar a:hover {
+            background-color: #575757;
+        }
 
-header nav ul {
-    list-style-type: none;
-    display: flex;
-}
+        /* Contenu principal */
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+        }
 
-header nav ul li {
-    margin-left: 1rem;
-}
+        .recipe-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-header nav ul li a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 1rem;
-}
+        .recipe-image img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+        }
 
-header nav ul li a:hover {
-    text-decoration: underline;
-}
+        .recipe-description {
+            font-size: 1.1rem;
+            color: #333;
+        }
 
-/* Bannière d'accueil */
-.hero {
-    text-align: center;
-    background: url('https://via.placeholder.com/1500x800') no-repeat center center/cover;
-    padding: 4rem 0;
-    color: #fff;
-}
+        .recipe-info {
+            display: flex;
+            gap: 30px;
+            font-size: 1rem;
+            color: #333;
+        }
 
-.hero h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
+        .ingredients, .method {
+            flex: 1;
+        }
 
-.hero p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-}
+        .comments-section {
+            margin-top: 30px;
+        }
 
-.hero .search input {
-    padding: 0.5rem;
-    font-size: 1rem;
-    width: 300px;
-    border: none;
-    border-radius: 5px;
-}
+        .comment {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
 
-.hero .search button {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.hero .search button:hover {
-    background-color: #555;
-}
-
-/* Section des recettes populaires */
-.popular-recipes {
-    text-align: center;
-    padding: 3rem 0;
-    background-color: #fff;
-}
-
-.popular-recipes h2 {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-}
-
-.recipe-list {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-}
-
-.recipe {
-    text-align: center;
-    width: 300px;
-}
-
-.recipe img {
-    width: 100%;
-    border-radius: 8px;
-}
-
-.recipe h3 {
-    margin-top: 1rem;
-    font-size: 1.2rem;
-}
-
-/* Footer */
-footer {
-    text-align: center;
-    padding: 1rem;
-    background-color: #333;
-    color: #fff;
-}
-
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content {
+                margin-left: 0;
+                width: 100%;
+            }
+            #sidebar {
+                width: 100%;
+                position: static;
+                display: flex;
+                justify-content: space-between;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- En-tête avec le logo et la navigation -->
-    <header>
-        <div class="logo">Recettes Gourmandes</div>
-        <nav>
-            <ul>
-                <li><a href="#">Accueil</a></li>
-                <li><a href="#">Recettes</a></li>
-                <li><a href="#">À propos</a></li>
-                <li><a href="#">Contact</a></li>
-                <li><a href="#">Se connecter</a></li>
-                <li><a href="#">S'inscrire</a></li>
-            </ul>
-        </nav>
-    </header>
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <a href="#">Accueil</a>
+        <a href="#">Recettes</a>
+        <a href="#">Profil</a>
+        <a href="#">Mes Publications</a>
+    </div>
 
-    <!-- Bannière d'accueil avec des images de recettes -->
-    <section class="hero">
-        <h1>Bienvenue sur Recettes Gourmandes</h1>
-        <p>Découvrez des recettes savoureuses, faciles à préparer!</p>
-        <div class="search">
-            <input type="text" placeholder="Rechercher des recettes...">
-            <button>Rechercher</button>
+    <!-- Contenu principal -->
+    <div class="content">
+        <div class="recipe-details">
+            <!-- Image de la recette -->
+            <div class="recipe-image">
+                <img src="https://via.placeholder.com/800x400" alt="Image de la recette">
+            </div>
+
+            <!-- Titre et description -->
+            <h1>Nom de la Recette</h1>
+            <div class="recipe-description">
+                <p>Voici la description détaillée de la recette. Cette recette est facile à préparer et convient à toute la famille. Lisez les étapes suivantes pour en savoir plus !</p>
+            </div>
+
+            <!-- Informations sur la recette -->
+            <div class="recipe-info">
+                <div class="ingredients">
+                    <h2>Ingrédients</h2>
+                    <ul>
+                        <li>Ingrédient 1</li>
+                        <li>Ingrédient 2</li>
+                        <li>Ingrédient 3</li>
+                        <li>Ingrédient 4</li>
+                    </ul>
+                </div>
+
+                <div class="method">
+                    <h2>Méthode</h2>
+                    <p>Suivez ces étapes pour préparer la recette : <br>
+                    1. Préparation des ingrédients.<br>
+                    2. Cuisson de la recette.<br>
+                    3. Assemblage et dégustation.</p>
+                </div>
+            </div>
+
+            <!-- Section commentaires -->
+            <div class="comments-section">
+                <h2>Commentaires</h2>
+                <div class="comment">
+                    <p><strong>Utilisateur 1 :</strong> Super recette, mes enfants ont adoré !</p>
+                </div>
+                <div class="comment">
+                    <p><strong>Utilisateur 2 :</strong> Très facile à faire et délicieux, je recommande !</p>
+                </div>
+            </div>
+
+            <!-- Recettes similaires -->
+            <div class="similar-recipes">
+                <h2>Recettes Similaires</h2>
+                <ul>
+                    <li><a href="#">Recette 1</a></li>
+                    <li><a href="#">Recette 2</a></li>
+                    <li><a href="#">Recette 3</a></li>
+                </ul>
+            </div>
         </div>
-    </section>
-
-    <!-- Recettes populaires -->
-    <section class="popular-recipes">
-        <h2>Recettes Populaires</h2>
-        <div class="recipe-list">
-            <div class="recipe">
-                <img src="https://via.placeholder.com/300x200" alt="Recette 1">
-                <h3>Soupe de légumes</h3>
-            </div>
-            <div class="recipe">
-                <img src="https://via.placeholder.com/300x200" alt="Recette 2">
-                <h3>Pâtes à la sauce tomate</h3>
-            </div>
-            <div class="recipe">
-                <img src="https://via.placeholder.com/300x200" alt="Recette 3">
-                <h3>Salade César</h3>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer avec des liens supplémentaires -->
-    <footer>
-        <p>&copy; 2025 Recettes Gourmandes | Tous droits réservés</p>
-    </footer>
+    </div>
 
 </body>
 </html>
