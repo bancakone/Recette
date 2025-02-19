@@ -79,7 +79,7 @@ foreach ($historique as $item) {
             <li><a href="#" class="black-text"><i class="material-icons">bookmark</i> Enregistrements</a></li>
 
             <?php if (isset($_SESSION['user_id'])): // Afficher la section publication uniquement si l'utilisateur est connecté ?>
-                <li><a href="Brouillons.php" class="black-text"><i class="material-icons">post_add</i> Brouillons</a></li>
+                <li><a href="Brouillons.php" class="black-text"><i class="material-icons">save</i> Brouillons</a></li>
             <?php endif; ?>
 
             <?php if (isset($_SESSION['user_id'])): // Afficher la section publication uniquement si l'utilisateur est connecté ?>
