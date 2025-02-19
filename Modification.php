@@ -100,6 +100,7 @@ if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingr
 ?>
 
 
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -221,10 +222,11 @@ if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingr
             input.placeholder = "Méthodes";
             container.appendChild(input);
         }
+
         function sauvegarderBrouillon() {
-        document.getElementById('statut').value = "brouillon";
-        document.querySelector("form").submit(); // Soumettre le formulaire après avoir changé la valeur
-    }
+            document.getElementById('statut').value = "brouillon"; // Change le statut à "brouillon"
+            document.querySelector("form").submit(); // Soumettre le formulaire après avoir changé la valeur
+        }
     </script>
 </body>
 </html>

@@ -2,11 +2,13 @@
 session_start();
 include('config.php'); // Connexion à la base de données
 
-// Requête pour récupérer toutes les recettes
-$sql = "SELECT * FROM recettes ORDER BY date_creation DESC";
-$stmt = $pdo->query($sql);
-$recettes = $stmt->fetchAll();
+
+$sql_actualite = "SELECT * FROM recettes WHERE statut = 'publie' ORDER BY date_creation DESC";  // Pas de limite ici
+$stmt_actualite = $pdo->prepare($sql_actualite);
+$stmt_actualite->execute();
+$recettes_actualite = $stmt_actualite->fetchAll();
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>

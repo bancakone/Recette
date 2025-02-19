@@ -1,0 +1,26 @@
+body {
+    display: flex;
+    background-color: #f4f4f4;
+}
+.sidenav {
+    width: 250px;
+    color: white;
+}
+.main-content {
+    margin-left: 260px;
+    padding: 20px;
+    width: calc(100% - 260px);
+}
+.card {
+    padding: 20px;
+    border-radius: 10px;
+}
+.recipe-actions i {
+    cursor: pointer;
+    margin-right: 15px;
+    transition: 0.3s;
+}
+.recipe-actions i:hover {
+    color: red;
+    transform: scale(1.2);
+}

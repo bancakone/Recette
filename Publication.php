@@ -16,11 +16,13 @@ $stmt_user = $pdo->prepare($sql_user);
 $stmt_user->execute(['user_id' => $user_id]);
 $user = $stmt_user->fetch();
 
+
 // Récupérer les recettes publiées par l'utilisateur
-$sql = "SELECT * FROM recettes WHERE user_id = :user_id ORDER BY date_creation DESC";
+$sql = "SELECT * FROM recettes WHERE user_id = :user_id AND statut = 'publie' ORDER BY date_creation DESC";
 $stmt = $pdo->prepare($sql);
 $stmt->execute(['user_id' => $user_id]);
 $recettes = $stmt->fetchAll();
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">

@@ -2,344 +2,369 @@
 session_start();
 include('config.php'); // Connexion à la base de données
 
-// Vérifier si l'ID de la recette est passé dans l'URL
 if (isset($_GET['id'])) {
     $id_recette = $_GET['id'];
 
-    // Requête pour récupérer les détails de la recette
     $sql = "SELECT * FROM recettes WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':id', $id_recette, PDO::PARAM_INT);
     $stmt->execute();
     $recette = $stmt->fetch();
 
-    // Vérifier si la recette existe
     if (!$recette) {
         echo "Recette non trouvée.";
         exit;
     }
 
-    // Enregistrement dans l'historique
-    if (!isset($_SESSION['unique_id'])) {
-        $_SESSION['unique_id'] = uniqid('user_', true); // Créer un ID unique si non existant
+    if (!isset($_SESSION['user_id'])) {
+        $_SESSION['user_id'] = uniqid('user_', true);
     }
-    $user_id = $_SESSION['unique_id']; // Utiliser l'ID unique de l'utilisateur
+    $user_id = $_SESSION['user_id'];
 
-    // Vérifier si la recette est déjà dans l'historique
     $verif = $pdo->prepare("SELECT COUNT(*) FROM historique WHERE user_id = :user_id AND recette_id = :recette_id");
-    $verif->bindParam(':user_id', $user_id, PDO::PARAM_STR); 
+    $verif->bindParam(':user_id', $user_id, PDO::PARAM_STR);
     $verif->bindParam(':recette_id', $id_recette, PDO::PARAM_INT);
     $verif->execute();
     $deja_vu = $verif->fetchColumn();
 
-    // Si la recette n'a pas été vue, l'enregistrer dans l'historique
     if ($deja_vu == 0) {
         $stmt_historique = $pdo->prepare("INSERT INTO historique (user_id, recette_id, titre) VALUES (:user_id, :recette_id, :titre)");
-        $stmt_historique->bindParam(':user_id', $user_id, PDO::PARAM_STR); 
+        $stmt_historique->bindParam(':user_id', $user_id, PDO::PARAM_STR);
         $stmt_historique->bindParam(':recette_id', $id_recette, PDO::PARAM_INT);
-        $stmt_historique->bindParam(':titre', $recette['titre'], PDO::PARAM_STR); 
+        $stmt_historique->bindParam(':titre', $recette['titre'], PDO::PARAM_STR);
         $stmt_historique->execute();
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détails de la Recette</title>
+    <title><?php echo htmlspecialchars($recette['titre']); ?></title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- <link rel="stylesheet" href="CSS/Recette.css"> -->
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f5f5f5;
-            background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/wood_light.png');
-            background-size: cover;
             display: flex;
-            height: 100vh;
-            overflow-x: hidden;
+            background-color: #f4f4f4;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
         }
 
-        /* Sidebar */
-        #sidebar {
+        .sidenav {
             width: 250px;
-            background-color: #2C3E50;
+            background: linear-gradient(45deg, #0066cc, #003366);
             color: white;
-            padding-top: 20px;
-            height: 100%;
+            height: 100vh;
             position: fixed;
-            top: 0;
-            transition: width 0.3s ease;
+            padding-top: 20px;
         }
 
-        #sidebar a {
-            color: white;
-            text-decoration: none;
+        .sidenav .logo h5 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .sidenav a {
+            font-size: 18px;
             padding: 15px;
-            display: block;
-            transition: background-color 0.3s;
+            transition: background 0.3s ease;
+        }
+
+        .sidenav a:hover {
+            background-color: #004080;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+            width: calc(100% - 260px);
+            background-color: #ffffff;
+        }
+
+        .card {
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            background-color: #ffffff;
+        }
+
+        .card-image img {
+            width: 100%;
+            border-radius: 15px;
+        }
+
+        .card-content h4 {
+            color: #333;
+            font-size: 26px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .recipe-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .recipe-actions i {
+            cursor: pointer;
+            transition: 0.3s;
+            color: #0066cc;
+        }
+
+        .recipe-actions i:hover {
+            color: #ff6347;
+            transform: scale(1.3);
+        }
+
+        .separator {
+            border-left: 2px solid #ccc;
+            height: 100%;
+            margin: 0 20px;
+        }
+
+        .row {
+            margin-bottom: 20px;
+        }
+
+        .portion {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: 18px;
         }
 
-        #sidebar a:hover {
-            background-color: #34495E;
-        }
-
-        /* Contenu principal */
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .container {
-            max-width: 100%;
-            margin: auto;
-        }
-
-        .recipe-image {
-            width: 100%;
-            height: 500px;
-            object-fit: cover;
-            border-radius: 15px;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .recipe-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            font-weight: 600;
-        }
-
-        .recipe-header h4 {
-            margin: 0;
-            font-size: 2rem;
-            color: #2C3E50;
-        }
-
-        .actions i {
-            margin: 0 8px;
-            cursor: pointer;
-            color: #3498db;
-            transition: color 0.3s;
-        }
-
-        .actions i:hover {
-            color: #2980b9;
-        }
-
-        /* Aligner Portion, Note et Durée */
-        .recipe-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            gap: 20px;
-        }
-
-        .portion, .rating, .duration {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .portion button, .rating i, .duration input {
-            cursor: pointer;
-        }
-
         .portion button {
-            padding: 8px 12px;
-            font-size: 1.2rem;
-            background-color: #3498db;
+            padding: 5px 10px;
+            background-color: #0066cc;
             color: white;
+            border-radius: 10px;
             border: none;
-            border-radius: 8px;
-            transition: background-color 0.3s;
+            cursor: pointer;
         }
 
         .portion button:hover {
-            background-color: #2980b9;
+            background-color: #005bb5;
         }
 
-        .rating i {
-            cursor: pointer;
-            color: #f39c12;
-            font-size: 24px;
+        .ingredients {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            margin-top: 20px;
         }
 
-        .rating i:hover {
-            color: #e67e22;
-        }
-
-        .duration input {
-            width: 60px;
-            padding: 5px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
-
-        .recipe-details {
+        .method-duration {
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
-            gap: 20px;
+            align-items: center;
         }
 
-        .ingredients, .method {
-            width: 48%;
-        }
-
-        .ingredients ul {
-            list-style-type: none;
-        }
-
-        .ingredients li {
-            background-color: #ecf0f1;
-            margin: 8px 0;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .method p {
-            background-color: #ecf0f1;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 1rem;
+        .method-duration span {
+            font-size: 16px;
+            color: #666;
         }
 
         .comment-section {
             margin-top: 30px;
-            background-color: #fff;
+            background-color: #f0f0f0;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
         }
 
-        .footer {
+        .comment-section h5 {
+            color: #0066cc;
+            font-size: 22px;
+        }
+
+        .comment-section form {
+            margin-top: 15px;
+        }
+
+        .profile {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .profile img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .profile span {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .comment-textarea {
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+
+        .carousel {
+            margin-top: 30px;
+        }
+
+        .carousel-item img {
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        footer {
             margin-top: 20px;
-            color: #7f8c8d;
+            text-align: center;
+            color: #666;
         }
 
-        .btn {
-            background-color: #3498db;
-            color: white;
-            border-radius: 50px;
-            padding: 12px 25px;
-            transition: background-color 0.3s ease;
+        footer p {
+            font-size: 14px;
         }
 
-        .btn:hover {
-            background-color: #2980b9;
+        footer strong {
+            color: #0066cc;
         }
 
-        /* Mobile view */
-        @media (max-width: 768px) {
-            #sidebar {
-                width: 100%;
-                height: auto;
-                position: static;
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .recipe-details {
-                flex-direction: column;
-            }
-            .ingredients, .method {
-                width: 100%;
-                margin-bottom: 20px;
-            }
+        .subscribe-btn {
+            text-align: right;
         }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <div id="sidebar">
-        <a href="#">Accueil</a>
-        <a href="#">Recettes</a>
-        <a href="#">Profil</a>
-        <a href="#">Mes Publications</a>
-    </div>
+<!-- Sidebar -->
+<ul id="slide-out" class="sidenav sidenav-fixed blue darken-3">
+    <li class="logo center-align">
+        <h5 class="white-text">Menu</h5>
+    </li>
+    <li><a href="#" class="white-text"><i class="material-icons white-text">home</i>Accueil</a></li>
+    <li><a href="#" class="white-text"><i class="material-icons white-text">restaurant_menu</i>Recettes</a></li>
+    <li><a href="#" class="white-text"><i class="material-icons white-text">person</i>Profil</a></li>
+    <li><a href="#" class="white-text"><i class="material-icons white-text">favorite</i>Favoris</a></li>
+</ul>
 
-    <!-- Contenu principal -->
-    <div class="main-content">
-        <div class="container">
-            <img src="<?php echo $recette['photo']; ?>" alt="Image de la recette" class="recipe-image">
-            
-            <div class="recipe-header">
-                <h4><?php echo $recette['titre']; ?></h4>
-                <div class="actions">
+<!-- Contenu principal -->
+<div class="main-content">
+    <div class="container">
+        <div class="card hoverable">
+            <div class="card-image">
+                <img src="<?php echo htmlspecialchars($recette['photo']); ?>" alt="Image de la recette">
+            </div>
+            <div class="card-content">
+                <h4 class="blue-text text-darken-3"><?php echo htmlspecialchars($recette['titre']); ?></h4>
+                
+                <div class="recipe-actions">
                     <i class="material-icons">favorite_border</i>
                     <i class="material-icons">share</i>
+                    <i class="material-icons">file_download</i>
                 </div>
-            </div>
 
-            <div class="recipe-controls">
+                <!-- Portion -->
                 <div class="portion">
-                    <button>Portions: 2</button>
+                    <span>Portion</span>
+                    <div>
+                        <button id="decrement">-</button>
+                        <span id="portionCount">1</span>
+                        <button id="increment">+</button>
+                    </div>
                 </div>
-                <div class="rating">
-                    <i class="material-icons">star</i>
-                    <i class="material-icons">star</i>
-                    <i class="material-icons">star</i>
-                    <i class="material-icons">star_half</i>
-                    <i class="material-icons">star_border</i>
-                </div>
-                <div class="duration">
-                    <label>Temps: <input type="text" value="45 min" disabled></label>
-                </div>
-            </div>
 
-            <div class="recipe-details">
+                <div class="separator"></div>
+
+                <!-- Ingrédients -->
                 <div class="ingredients">
-                    <h5>Ingrédients</h5>
-                    <ul>
-                        <?php 
-                        // Affichage des ingrédients
-                        $ingredients = json_decode($recette['ingredients'], true);
+                    <h5>🛒 Ingrédients</h5>
+                    <ul class="collection with-header">
+                        <?php
+                        $ingredients = explode("\n", trim($recette['ingredients']));
                         foreach ($ingredients as $ingredient) {
-                            echo "<li>$ingredient</li>";
+                            echo "<li class='collection-item'>" . htmlspecialchars(trim($ingredient)) . "</li>";
                         }
                         ?>
                     </ul>
                 </div>
 
-                <div class="method">
-                    <h5>Méthode</h5>
-                    <p><?php echo nl2br($recette['description']); ?></p>
+                <!-- Méthode, Durée et Note -->
+                <div class="method-duration">
+                    <span>⏱️ Durée: <?php echo htmlspecialchars($recette['duree']); ?> min</span>
+                    <span>⭐ Note: <?php echo htmlspecialchars($recette['note']); ?>/5</span>
                 </div>
-            </div>
+                <h5>👨‍🍳 Méthode</h5>
+                <p class="flow-text"><?php echo nl2br(htmlspecialchars($recette['description'])); ?></p>
 
-            <div class="comment-section">
-                <h5>Commentaires</h5>
-                <form>
-                    <textarea placeholder="Ajouter un commentaire..." rows="4"></textarea><br>
-                    <button class="btn">Envoyer</button>
-                </form>
-            </div>
+                <!-- Commentaires -->
+                <div class="comment-section">
+                    <h5>💬 Commentaires</h5>
+                    <div class="profile">
+                        <img src="user-profile.jpg" alt="User Profile">
+                        <span>Utilisateur</span>
+                    </div>
+                    <form method="POST">
+                        <div class="input-field">
+                            <textarea id="comment" class="comment-textarea" name="comment"></textarea>
+                            <label for="comment">Ajouter un commentaire...</label>
+                        </div>
+                        <button class="btn blue waves-effect">Envoyer</button>
+                    </form>
+                    <a href="#">Voir les autres commentaires →</a>
+                </div>
 
-            <div class="footer">
-                <p>&copy; 2025 Recettes App</p>
-                <p><a href="mailto:support@recettesapp.com">Support</a></p>
+                <!-- Plus de recettes -->
+                <h5>🍽️ Plus de Recettes de <?php echo htmlspecialchars($recette['auteur']); ?></h5>
+                <div class="carousel">
+                    <!-- Dynamically load author's recipes -->
+                    <?php
+                    $author_recipes = $pdo->prepare("SELECT * FROM recettes WHERE auteur = :auteur LIMIT 5");
+                    $author_recipes->bindParam(':auteur', $recette['auteur'], PDO::PARAM_STR);
+                    $author_recipes->execute();
+                    while ($author_recipe = $author_recipes->fetch()) {
+                        echo "<a class='carousel-item' href='recette.php?id=" . $author_recipe['id'] . "'><img src='" . $author_recipe['photo'] . "' alt='" . $author_recipe['titre'] . "'></a>";
+                    }
+                    ?>
+                </div>
+
+                <!-- Footer -->
+                <p>Publié le <?php echo date("d/m/Y"); ?> par <strong><?php echo htmlspecialchars($recette['auteur']); ?></strong></p>
+                
+                <div class="subscribe-btn">
+                    <button class="btn waves-effect blue">S'abonner</button>
+                </div>
             </div>
         </div>
     </div>
-    
+</div>
+
+<!-- Scripts Materialize -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    M.Sidenav.init(document.querySelectorAll('.sidenav'));
+    M.Carousel.init(document.querySelectorAll('.carousel'), {
+        fullWidth: true,
+        indicators: true
+    });
+
+    // Portion adjustment
+    let portionCount = document.getElementById('portionCount');
+    document.getElementById('increment').addEventListener('click', function() {
+        portionCount.textContent = parseInt(portionCount.textContent) + 1;
+    });
+    document.getElementById('decrement').addEventListener('click', function() {
+        if (parseInt(portionCount.textContent) > 1) {
+            portionCount.textContent = parseInt(portionCount.textContent) - 1;
+        }
+    });
+});
+</script>
+
 </body>
 </html>

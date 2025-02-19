@@ -5,17 +5,27 @@ include('config.php'); // Connexion à la base de données
 // Limite de 4 recettes pour la page d'accueil
 $limite = 4;
 
-// Requête pour récupérer seulement 4 recettes
-$sql = "SELECT * FROM recettes ORDER BY date_creation DESC LIMIT :limite";
-$stmt = $pdo->prepare($sql);
-$stmt->bindParam(':limite', $limite, PDO::PARAM_INT);
-$stmt->execute();
-$recettes = $stmt->fetchAll();
+// Requête pour récupérer 4 recettes pour l'actualité (recettes publiées de tous les utilisateurs)
+$sql_actualite = "SELECT * FROM recettes WHERE statut = 'publie' ORDER BY date_creation DESC LIMIT :limite";
+$stmt_actualite = $pdo->prepare($sql_actualite);
+$stmt_actualite->bindParam(':limite', $limite, PDO::PARAM_INT);
+$stmt_actualite->execute();
+$recettes_actualite = $stmt_actualite->fetchAll();
 
-// Récupérer les 4 dernières recettes de l'historique
-$sql_historique = "SELECT * FROM historique WHERE user_id = :user_id ORDER BY id DESC LIMIT 4";
+// Requête pour récupérer uniquement les publications de l'utilisateur connecté (publications publiées)
+$recettes_publications = [];
+if (isset($_SESSION['user_id'])) {
+    $sql_publications = "SELECT * FROM recettes WHERE user_id = :user_id AND statut = 'publie' ORDER BY date_creation DESC LIMIT 4";  // Filtrage par statut 'publie'
+    $stmt_publications = $pdo->prepare($sql_publications);
+    $stmt_publications->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $stmt_publications->execute();
+    $recettes_publications = $stmt_publications->fetchAll();
+}
+
+// Récupérer les 4 dernières recettes de l'historique de l'utilisateur
+$sql_historique = "SELECT * FROM historique WHERE user_id = :user_id ORDER BY id DESC LIMIT 4";  // Limite 4
 $stmt_historique = $pdo->prepare($sql_historique);
-$stmt_historique->bindParam(':user_id', $_SESSION['unique_id'], PDO::PARAM_STR); 
+$stmt_historique->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT); 
 $stmt_historique->execute();
 $historique = $stmt_historique->fetchAll();
 
@@ -28,10 +38,12 @@ foreach ($historique as $item) {
     $stmt_recette->bindParam(':id', $id_recette, PDO::PARAM_INT);
     $stmt_recette->execute();
     $recette_details = $stmt_recette->fetch();
-    // Ajouter chaque recette à un tableau
     $historique_recettes[] = $recette_details;
 }
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -65,7 +77,10 @@ foreach ($historique as $item) {
             <li><a href="Profil.php" class="black-text"><i class="material-icons">person</i> Profil</a></li>
             <li><a href="#" class="black-text"><i class="material-icons">favorite</i> Favoris</a></li>
             <li><a href="#" class="black-text"><i class="material-icons">bookmark</i> Enregistrements</a></li>
-            <li><a href="#" class="black-text"><i class="material-icons">archive</i> Brouillons</a></li>
+
+            <?php if (isset($_SESSION['user_id'])): // Afficher la section publication uniquement si l'utilisateur est connecté ?>
+                <li><a href="Brouillons.php" class="black-text"><i class="material-icons">post_add</i> Brouillons</a></li>
+            <?php endif; ?>
 
             <?php if (isset($_SESSION['user_id'])): // Afficher la section publication uniquement si l'utilisateur est connecté ?>
                 <li><a href="Publication.php" class="black-text"><i class="material-icons">post_add</i> Publication</a></li>
@@ -73,9 +88,10 @@ foreach ($historique as $item) {
 
             <li><a href="Deconnexion.php" class="black-text"><i class="material-icons">exit_to_app</i> Déconnexion</a></li>
             <li><a href="#" class="black-text"><i class="material-icons">notifications</i> Notifications</a></li>
+
             <?php if (isset($_SESSION['user_id'])): ?>
-        <li><a href="Historique.php" class="black-text"><i class="material-icons">history</i> Historique</a></li>
-    <?php endif; ?>
+             <li><a href="Historique.php" class="black-text"><i class="material-icons">history</i> Historique</a></li>
+            <?php endif; ?>
         </ul>
     </div>
 
@@ -109,9 +125,9 @@ foreach ($historique as $item) {
 
         <h5>Actualité</h5>
         <div class="grid">
-            <?php foreach ($recettes as $recette): ?>
+            <?php foreach ($recettes_actualite as $recette): ?>
                 <div class="card">
-                    <a href="Recette.php?id=<?php echo $recette['id']; ?>&titre=<?php echo urlencode($recette['titre']); ?>">
+                    <a href="Recette.php?id=<?php echo $recette['id']; ?>">
                         <img src="<?php echo $recette['photo']; ?>" alt="Image de la recette">
                         <p><?php echo $recette['titre']; ?></p>
                     </a>
@@ -119,32 +135,38 @@ foreach ($historique as $item) {
             <?php endforeach; ?>
         </div>
         <div class="view-more">
-            <a href="Actualité.php">
-                <i class="material-icons">arrow_forward</i>
-            </a>
+            <a href="Actualité.php"><i class="material-icons">arrow_forward</i></a>
         </div>
 
-        <h5>Recherches Récentes</h5>
-        <div class="grid">
-            <?php foreach ($historique_recettes as $recette_details): ?>
-                <div class="card">
-                    <a href="Recette.php?id=<?php echo $recette_details['id']; ?>">
-                        <img src="<?php echo $recette_details['photo']; ?>" alt="Image de la recette">
-                        <p><?php echo $recette_details['titre']; ?></p>
-                    </a>
-                </div>
-            <?php endforeach; ?>
-        </div>
-        <div class="view-more">
-            <a href="Historique.php">
-                <i class="material-icons">arrow_forward</i>
-            </a>
-        </div>
 
-        <?php if (isset($_SESSION['user_id'])): // Afficher la section Publications uniquement si l'utilisateur est connecté ?>
+            <h5>Recherches Récentes</h5>
+
+                    <?php if (isset($_SESSION['user_id']) && count($historique_recettes) > 0): ?>
+                        <div class="grid">
+                            <?php foreach ($historique_recettes as $recette_details): ?>
+                                <div class="card">
+                                    <a href="Recette.php?id=<?php echo $recette_details['id']; ?>">
+                                        <img src="<?php echo $recette_details['photo']; ?>" alt="Image de la recette">
+                                        <p><?php echo $recette_details['titre']; ?></p>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="view-more">
+                            <a href="Historique.php">
+                                <i class="material-icons">arrow_forward</i>
+                            </a>
+                        </div>
+                    <?php else: ?>
+                        <p>Aucune recherche récente disponible.</p>
+                    <?php endif; ?>
+
+
+
+        <?php if (isset($_SESSION['user_id']) && count($recettes_publications) > 0): ?>
             <h5>Publications</h5>
             <div class="grid">
-                <?php foreach ($recettes as $recette): ?>
+                <?php foreach ($recettes_publications as $recette): ?>
                     <div class="card">
                         <a href="Recette.php?id=<?php echo $recette['id']; ?>">
                             <img src="<?php echo $recette['photo']; ?>" alt="Image de la recette">
@@ -154,9 +176,7 @@ foreach ($historique as $item) {
                 <?php endforeach; ?>
             </div>
             <div class="view-more">
-                <a href="Publication.php">
-                    <i class="material-icons">arrow_forward</i>
-                </a>
+                <a href="Publication.php"><i class="material-icons">arrow_forward</i></a>
             </div>
         <?php endif; ?>
     </div>

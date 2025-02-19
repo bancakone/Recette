@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 // Récupérer les 4 dernières recherches de l'historique
 $sql_historique = "SELECT * FROM historique WHERE user_id = :user_id ORDER BY id DESC";
 $stmt_historique = $pdo->prepare($sql_historique);
-$stmt_historique->bindParam(':user_id', $_SESSION['unique_id'], PDO::PARAM_STR); 
+$stmt_historique->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_STR); 
 $stmt_historique->execute();
 $historique = $stmt_historique->fetchAll();
 

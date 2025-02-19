@@ -24,30 +24,56 @@ if (isset($_GET['id'])) {
 
     // Traitement de la modification
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Mettre à jour les informations de la recette
         $titre = $_POST['titre'];
         $description = $_POST['description'];
         $portions = $_POST['portions'];
         $duree = $_POST['duree'];
-        $image = $_POST['image']; // Assurez-vous de gérer l'upload d'image si nécessaire
-        // Mettre à jour dans la base de données
-        $sql = "UPDATE recettes SET titre = :titre, description = :description, portions = :portions, duree = :duree, image = :image WHERE id = :id";
+        $ingredients = $_POST['ingredients'];
+        $methode = $_POST['methodes'];
+        
+        // Gestion de l'image
+        $image = $recette['photo']; // Image par défaut (ancienne image)
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            // Validation de l'image (type et taille)
+            $imageTmpPath = $_FILES['photo']['tmp_name'];
+            $imageName = $_FILES['photo']['name'];
+            $imageExtension = pathinfo($imageName, PATHINFO_EXTENSION);
+            $validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+
+            if (in_array(strtolower($imageExtension), $validExtensions)) {
+                // Générer un nom unique pour l'image
+                $newImageName = uniqid('recette_', true) . '.' . $imageExtension;
+                $imagePath = 'uploads/' . $newImageName;
+
+                // Déplacer l'image vers le dossier "uploads"
+                move_uploaded_file($imageTmpPath, $imagePath);
+                $image = $imagePath; // Mettre à jour le chemin de l'image
+            } else {
+                echo "Extension d'image invalide. Utilisez jpg, jpeg, png, ou gif.";
+                exit();
+            }
+        }
+
+        // Mise à jour des données dans la base
+        $sql = "UPDATE recettes SET titre = :titre, description = :description, portions = :portions, duree = :duree, ingredients = :ingredients, methodes = :methodes, photo = :photo WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             'titre' => $titre, 
             'description' => $description, 
             'portions' => $portions, 
             'duree' => $duree, 
-            'image' => $image,
+            'ingredients' => $ingredients,
+            'methodes' => $methode,
+            'photo' => $image,
             'id' => $recette_id
         ]);
 
-        // Rediriger vers la page des publications
-        header('Location: MesPublications.php');
+        header('Location: Publication.php');
         exit();
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -59,11 +85,22 @@ if (isset($_GET['id'])) {
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            display: flex;
             font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+        }
+        .sidebar {
+            width: 250px;
+            background: #fff;
+            padding: 20px;
+            height: 100vh;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
         }
         .container {
-            margin-top: 20px;
             background: white;
             padding: 20px;
             border-radius: 10px;
@@ -76,10 +113,6 @@ if (isset($_GET['id'])) {
             padding: 10px;
             border-bottom: 2px solid #ddd;
         }
-        .title {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
         .input-field input, .input-field textarea {
             font-size: 1rem;
             border-bottom: 2px solid #ff7675;
@@ -91,62 +124,69 @@ if (isset($_GET['id'])) {
             font-weight: bold;
             border-radius: 20px;
         }
-        .flex-row {
-            display: flex;
-            gap: 15px;
-        }
         .btn-floating {
             background-color: #ff7675;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <a href="Publication.php" class="material-icons">close</a>
-            <span class="title">Modifier Recette</span>
-        </div>
-        
-        <div class="row center">
-            <a class="btn-floating btn-large red">
-                <i class="large material-icons">add</i>
-            </a>
-            <p>Modifier une photo</p>
-        </div>
-        
-        <form method="POST" enctype="multipart/form-data">
-            <div class="row flex-row">
-                <div class="col s6">
-                    <div class="input-field">
-                        <input type="text" id="titre" name="titre" value="<?php echo htmlspecialchars($recette['titre']); ?>" placeholder="Titre" required>
-                    </div>
-                </div>
-                <div class="col s6">
-                    <div class="input-field">
-                        <textarea id="description" name="description" class="materialize-textarea" placeholder="Description" required><?php echo htmlspecialchars($recette['description']); ?></textarea>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row flex-row">
-                <div class="col s6">
-                    <div class="input-field">
-                        <input type="number" id="portions" name="portions" value="<?php echo htmlspecialchars($recette['portions']); ?>" min="1" placeholder="Portions" required>
-                    </div>
-                </div>
-                <div class="col s6">
-                    <div class="input-field">
-                        <input type="text" id="duree" name="duree" value="<?php echo htmlspecialchars($recette['duree']); ?>" placeholder="Durée (ex: 30 min)" required>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row center">
-                <button type="submit" class="btn btn-small red">Enregistrer les modifications</button>
-            </div>
-        </form>
+    <div class="sidebar">
+        <ul>
+            <li><a href="Profil.php">Profil</a></li>
+            <li><a href="MesPublications.php">Mes Publications</a></li>
+            <li><a href="Deconnexion.php">Déconnexion</a></li>
+        </ul>
     </div>
-    
+
+    <div class="content">
+        <div class="container">
+            <div class="header">
+                <a href="Publication.php" class="material-icons">close</a>
+                <span class="title">Modifier Recette</span>
+            </div>
+            
+            <form method="POST" enctype="multipart/form-data">
+            <div class="section-title">Image</div>
+                <div class="input-field">
+                    <input type="file" name="photo" accept="image/*">
+                </div>
+
+                <div class="section-title">Informations de la Recette</div>
+                <div class="input-field">
+                    <input type="text" name="titre" value="<?php echo htmlspecialchars($recette['titre']); ?>" required>
+                </div>
+                <div class="input-field">
+                    <textarea name="description" class="materialize-textarea" required><?php echo htmlspecialchars($recette['description']); ?></textarea>
+                </div>
+                
+                <div class="section-title">Ingrédients & Méthode</div>
+                <div class="input-field">
+                    <input type="text" name="ingredients" value="<?php echo htmlspecialchars($recette['ingredients']); ?>" required>
+                </div>
+                <div class="input-field">
+                    <textarea name="methode" class="materialize-textarea" required><?php echo htmlspecialchars($recette['methodes']); ?></textarea>
+                </div>
+                
+                <div class="section-title">Détails</div>
+                <div class="input-field">
+                    <input type="number" name="portions" value="<?php echo htmlspecialchars($recette['portions']); ?>" min="1" required>
+                </div>
+                <div class="input-field">
+                    <input type="text" name="duree" value="<?php echo htmlspecialchars($recette['duree']); ?>" required>
+                </div>
+                
+                <div class="row center">
+                    <button type="submit" class="btn btn-small red">Enregistrer les modifications</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>

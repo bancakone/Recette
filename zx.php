@@ -1,99 +1,58 @@
+<?php
+session_start();
+include('config.php'); // Connexion à la base de données
+
+// Vérifier si l'ID de la recette est passé dans l'URL
+if (isset($_GET['id'])) {
+    $id_recette = $_GET['id'];
+
+    // Requête pour récupérer les détails de la recette
+    $sql = "SELECT * FROM recettes WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':id', $id_recette, PDO::PARAM_INT);
+    $stmt->execute();
+    $recette = $stmt->fetch();
+
+    // Vérifier si la recette existe
+    if (!$recette) {
+        echo "Recette non trouvée.";
+        exit;
+    }
+
+    // Enregistrement dans l'historique
+    if (!isset($_SESSION['unique_id'])) {
+        $_SESSION['unique_id'] = uniqid('user_', true); // Créer un ID unique si non existant
+    }
+    $user_id = $_SESSION['unique_id']; // Utiliser l'ID unique de l'utilisateur
+
+    // Vérifier si la recette est déjà dans l'historique
+    $verif = $pdo->prepare("SELECT COUNT(*) FROM historique WHERE user_id = :user_id AND recette_id = :recette_id");
+    $verif->bindParam(':user_id', $user_id, PDO::PARAM_STR); 
+    $verif->bindParam(':recette_id', $id_recette, PDO::PARAM_INT);
+    $verif->execute();
+    $deja_vu = $verif->fetchColumn();
+
+    // Si la recette n'a pas été vue, l'enregistrer dans l'historique
+    if ($deja_vu == 0) {
+        $stmt_historique = $pdo->prepare("INSERT INTO historique (user_id, recette_id, titre) VALUES (:user_id, :recette_id, :titre)");
+        $stmt_historique->bindParam(':user_id', $user_id, PDO::PARAM_STR); 
+        $stmt_historique->bindParam(':recette_id', $id_recette, PDO::PARAM_INT);
+        $stmt_historique->bindParam(':titre', $recette['titre'], PDO::PARAM_STR); 
+        $stmt_historique->execute();
+    }
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Détails de la Recette</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            background-color: #f4f4f4;
-        }
-
-        /* Sidebar */
-        #sidebar {
-            width: 250px;
-            background-color: #333;
-            color: white;
-            padding-top: 20px;
-            position: fixed;
-            height: 100%;
-        }
-
-        #sidebar a {
-            color: white;
-            text-decoration: none;
-            padding: 15px;
-            display: block;
-            transition: background-color 0.3s;
-        }
-
-        #sidebar a:hover {
-            background-color: #575757;
-        }
-
-        /* Contenu principal */
-        .content {
-            margin-left: 250px;
-            padding: 20px;
-            width: calc(100% - 250px);
-        }
-
-        .recipe-details {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .recipe-image img {
-            width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-        }
-
-        .recipe-description {
-            font-size: 1.1rem;
-            color: #333;
-        }
-
-        .recipe-info {
-            display: flex;
-            gap: 30px;
-            font-size: 1rem;
-            color: #333;
-        }
-
-        .ingredients, .method {
-            flex: 1;
-        }
-
-        .comments-section {
-            margin-top: 30px;
-        }
-
-        .comment {
-            border-bottom: 1px solid #ccc;
-            padding: 10px 0;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .content {
-                margin-left: 0;
-                width: 100%;
-            }
-            #sidebar {
-                width: 100%;
-                position: static;
-                display: flex;
-                justify-content: space-between;
-            }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="CSS/Recette.css">
 </head>
 <body>
 
@@ -106,62 +65,72 @@
     </div>
 
     <!-- Contenu principal -->
-    <div class="content">
-        <div class="recipe-details">
-            <!-- Image de la recette -->
-            <div class="recipe-image">
-                <img src="https://via.placeholder.com/800x400" alt="Image de la recette">
-            </div>
-
-            <!-- Titre et description -->
-            <h1>Nom de la Recette</h1>
-            <div class="recipe-description">
-                <p>Voici la description détaillée de la recette. Cette recette est facile à préparer et convient à toute la famille. Lisez les étapes suivantes pour en savoir plus !</p>
-            </div>
-
-            <!-- Informations sur la recette -->
-            <div class="recipe-info">
-                <div class="ingredients">
-                    <h2>Ingrédients</h2>
-                    <ul>
-                        <li>Ingrédient 1</li>
-                        <li>Ingrédient 2</li>
-                        <li>Ingrédient 3</li>
-                        <li>Ingrédient 4</li>
-                    </ul>
+    <div class="main-content">
+        <div class="container">
+            <img src="<?php echo $recette['photo']; ?>" alt="Image de la recette" class="recipe-image">
+            
+            <div class="recipe-header">
+                <h4><?php echo $recette['titre']; ?></h4>
+                <div class="actions">
+                    <i class="material-icons">favorite_border</i>
+                    <i class="material-icons">share</i>
                 </div>
+            </div>
+
+            <div class="recipe-controls">
+                <div class="portion">
+                    <button>Portions: 2</button>
+                </div>
+                <div class="rating">
+                    <i class="material-icons">star</i>
+                    <i class="material-icons">star</i>
+                    <i class="material-icons">star</i>
+                    <i class="material-icons">star_half</i>
+                    <i class="material-icons">star_border</i>
+                </div>
+                <div class="duration">
+                    <label>Temps: <input type="text" value="45 min" disabled></label>
+                </div>
+            </div>
+
+            <div class="recipe-details">
+                <div class="ingredients">
+                    <h5>Ingrédients</h5>
+                    <ul>
+                        <?php 
+                        // Vérifier si la recette a des ingrédients valides
+                        $ingredients = isset($recette['ingredients']) && !empty($recette['ingredients']) 
+                            ? explode("\n", trim($recette['ingredients'])) 
+                            : [];
+
+                        foreach ($ingredients as $ingredient) {
+                            echo "<li>" . htmlspecialchars(trim($ingredient)) . "</li>";
+                        }
+                        ?>
+                    </ul>
+             </div>
+
 
                 <div class="method">
-                    <h2>Méthode</h2>
-                    <p>Suivez ces étapes pour préparer la recette : <br>
-                    1. Préparation des ingrédients.<br>
-                    2. Cuisson de la recette.<br>
-                    3. Assemblage et dégustation.</p>
+                    <h5>Méthode</h5>
+                    <p><?php echo nl2br($recette['description']); ?></p>
                 </div>
             </div>
 
-            <!-- Section commentaires -->
-            <div class="comments-section">
-                <h2>Commentaires</h2>
-                <div class="comment">
-                    <p><strong>Utilisateur 1 :</strong> Super recette, mes enfants ont adoré !</p>
-                </div>
-                <div class="comment">
-                    <p><strong>Utilisateur 2 :</strong> Très facile à faire et délicieux, je recommande !</p>
-                </div>
+            <div class="comment-section">
+                <h5>Commentaires</h5>
+                <form>
+                    <textarea placeholder="Ajouter un commentaire..." rows="4"></textarea><br>
+                    <button class="btn">Envoyer</button>
+                </form>
             </div>
 
-            <!-- Recettes similaires -->
-            <div class="similar-recipes">
-                <h2>Recettes Similaires</h2>
-                <ul>
-                    <li><a href="#">Recette 1</a></li>
-                    <li><a href="#">Recette 2</a></li>
-                    <li><a href="#">Recette 3</a></li>
-                </ul>
+            <div class="footer">
+                <p>&copy; 2025 Recettes App</p>
+                <p><a href="mailto:support@recettesapp.com">Support</a></p>
             </div>
         </div>
     </div>
-
+    
 </body>
 </html>
