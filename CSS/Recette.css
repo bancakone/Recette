@@ -103,3 +103,48 @@
             align-items: center;
             margin-top: 20px;
         }
+        .btn-favorite {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .btn-favorite i {
+            color: red;
+            font-size: 36px;
+        }
+        
+        .btn-favorite:active {
+            transform: scale(1.2);
+        }
+        .comments-section {
+            margin-top: 30px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .profile-pic, .comment-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .comment-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        
+        .comment-header {
+            display: flex;
+            align-items: center;
+        }
+        
+        
+        

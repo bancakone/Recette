@@ -1,6 +1,11 @@
 <?php
+// Déconnexion
 session_start();
-session_destroy();
-header("Location: Accueil.php");
-exit();
+session_unset(); // Supprime toutes les variables de session
+session_destroy(); // Détruit la session
+
+// Redirection vers la page de connexion
+header('Location: Accueil.php');
+exit;
+
 ?>

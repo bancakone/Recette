@@ -25,11 +25,12 @@
     list-style: none;
 }
 .sidebar ul li a {
-    color: #fff;
-    text-decoration: none;
-    padding: 5px;
+    color: white;
     display: flex;
-    transition: background-color 0.3s;
+    align-items: center;
+    padding: 25px;
+    text-decoration: none;
+    transition: 0.3s;
 }
 .sidebar ul li a:hover {
     background-color: #ff5722;
@@ -110,3 +111,6 @@
 .right-items span {
     margin-right: 10px;
 }
+
+
+

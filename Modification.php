@@ -106,91 +106,118 @@ if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingr
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter Recette</title>
+    <title>Ajouter une Recette</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="CSS/Modification.css">
+    <style>
+        body {
+            background: #f5f5f5;
+            display: flex;
+            height: 100vh;
+        }
+        .left-section, .right-section {
+            flex: 1;
+            height: 100vh;
+        }
+        .left-section {
+            background: url('background.jpg') center/cover;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .right-section {
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <a href="Accueil.php" class="material-icons">close</a>
-            <span class="title">Ajouter Recette</span>
+    <div class="left-section">
+        Nom de l'Application
+    </div>
+    <div class="right-section">
+        <div class="container">
+            <div class="header">
+                <a href="Accueil.php" class="material-icons">close</a>
+                <span class="title">Ajouter Recette</span>
+            </div>
+            
+            <form action="Modification.php" method="POST" enctype="multipart/form-data">
+                <div class="file-field input-field">
+                    <div class="btn red">
+                        <span>Photo</span>
+                        <input type="file" id="file-input" name="photo" accept="image/*" onchange="previewImage(event)">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text" placeholder="Ajouter une photo">
+                    </div>
+                </div>
+                <div id="image-preview" class="center">
+                    <img id="preview-img" src="" alt="Prévisualisation" style="display: none; max-width: 100%;">
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input type="text" id="titre" name="titre" required>
+                        <label for="titre">Titre</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input type="text" id="duree" name="duree" required>
+                        <label for="duree">Durée (ex: 30 min)</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s6">
+                        <textarea id="description" name="description" class="materialize-textarea" required></textarea>
+                        <label for="description">Description</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input type="number" id="portions" name="portions" min="1" required>
+                        <label for="portions">Portions</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s6" id="ingredients-container">
+                        <label>Ingrédients</label>
+                        <input type="text" name="ingredients[]" required>
+                        <a class="btn-floating btn-small red" onclick="ajouterIngredient()">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </div>
+                    <div class="input-field col s6" id="methodes-container">
+                        <label>Méthodes</label>
+                        <input type="text" name="methodes[]" required>
+                        <a class="btn-floating btn-small red" onclick="ajouterMethode()">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="statut" name="statut" value="publie">
+                
+                <div class="row center">
+                    <button type="button" class="btn grey" onclick="sauvegarderBrouillon()">Brouillon</button>
+                    <button type="submit" class="btn red">Publier</button>
+                </div>
+            </form>
         </div>
-        
-        <form action="Modification.php" method="POST" enctype="multipart/form-data">
-            <!-- Champ pour télécharger l'image -->
-            <div class="row center">
-                <a class="btn-floating btn-large red" onclick="document.getElementById('file-input').click();">
-                    <i class="large material-icons">add</i>
-                </a>
-                <p>Ajouter une photo</p>
-
-                <!-- Champ de fichier invisible -->
-                <input type="file" id="file-input" name="photo" accept="image/*" style="display: none;" onchange="previewImage(event)">
-            </div>
-
-            <!-- Zone de prévisualisation de l'image -->
-            <div id="image-preview" class="center">
-                <img id="preview-img" src="" alt="Prévisualisation de l'image" style="display: none; max-width: 100px; max-height: 100px;">
-            </div>
-
-            <!-- Champ pour le titre -->
-            <div class="row flex-row">
-                <div class="col s6">
-                    <div class="input-field">
-                        <input type="text" id="titre" name="titre" placeholder="Titre" required>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Champ pour la description -->
-            <div class="row flex-row">
-                <div class="col s6">
-                    <div class="input-field">
-                        <textarea id="description" name="description" class="materialize-textarea" placeholder="Description" required></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Champ pour les portions et la durée -->
-            <div class="row flex-row">
-                <div class="col s6">
-                    <div class="input-field">
-                        <input type="number" id="portions" name="portions" min="1" placeholder="Portions" required>
-                    </div>
-                </div>
-                <div class="col s6">
-                    <div class="input-field">
-                        <input type="text" id="duree" name="duree" placeholder="Durée (ex: 30 min)" required>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Champs pour les ingrédients et méthodes -->
-            <div class="row flex-row">
-                <div class="col s6">
-                    <div class="input-field" id="ingredients-container">
-                        <input type="text" name="ingredients[]" placeholder="Ingrédients" required>
-                        <a class="btn-floating btn-small" onclick="ajouterIngredient()"><i class="material-icons">add</i></a>
-                    </div>
-                </div>
-                <div class="col s6">
-                    <div class="input-field" id="methodes-container">
-                        <input type="text" name="methodes[]" placeholder="Méthodes" required>
-                        <a class="btn-floating btn-small" onclick="ajouterMethode()"><i class="material-icons">add</i></a>
-                    </div>
-                </div>
-            </div>
-            <input type="hidden" id="statut" name="statut" value="publie">
-
-            <!-- Boutons pour enregistrer ou publier -->
-            <div class="row center">
-                <a class="btn btn-small grey" onclick="sauvegarderBrouillon()">Brouillons</a>
-                <button type="submit" class="btn btn-small red">Publier</button>
-            </div>
-
-        </form>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -210,7 +237,6 @@ if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingr
             let input = document.createElement("input");
             input.type = "text";
             input.name = "ingredients[]";
-            input.placeholder = "Ingrédients";
             container.appendChild(input);
         }
 
@@ -219,13 +245,12 @@ if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingr
             let input = document.createElement("input");
             input.type = "text";
             input.name = "methodes[]";
-            input.placeholder = "Méthodes";
             container.appendChild(input);
         }
 
         function sauvegarderBrouillon() {
-            document.getElementById('statut').value = "brouillon"; // Change le statut à "brouillon"
-            document.querySelector("form").submit(); // Soumettre le formulaire après avoir changé la valeur
+            document.getElementById('statut').value = "brouillon";
+            document.querySelector("form").submit();
         }
     </script>
 </body>

@@ -11,11 +11,10 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // Récupérer les infos utilisateur
-$sql_user = "SELECT nom, prenom, email FROM users WHERE id = :user_id";
+$sql_user = "SELECT nom, prenom, email , photo FROM users WHERE id = :user_id";
 $stmt_user = $pdo->prepare($sql_user);
 $stmt_user->execute(['user_id' => $user_id]);
 $user = $stmt_user->fetch();
-
 
 // Récupérer les recettes publiées par l'utilisateur
 $sql = "SELECT * FROM recettes WHERE user_id = :user_id AND statut = 'publie' ORDER BY date_creation DESC";
@@ -32,80 +31,31 @@ $recettes = $stmt->fetchAll();
     <title>Mes Publications</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <style>
-        body {
-            display: flex;
-        }
-        .sidebar {
-            width: 250px;
-            background-color: #37474F;
-            color: white;
-            height: 100vh;
-            padding: 20px;
-            position: fixed;
-        }
-        .sidebar a {
-            color: white;
-            display: flex;
-            align-items: center;
-            padding: 21px;
-            text-decoration: none;
-        }
-        .sidebar a i {
-            margin-right: 20px;
-        }
-        .sidebar a:hover {
-            background-color: #455A64;
-        }
-        .content {
-            margin-left: 270px;
-            padding: 10px;
-            width: 100%;
-        }
-        .card {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-        }
-        .card-image img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-        }
-        .card-content {
-            flex-grow: 0;
-        }
-        .card-action {
-            display: flex;
-            justify-content: space-between;
-        }
-        .btn-floating {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="CSS/Publication.css">
 </head>
 <body>
 
     <!-- Sidebar -->
     <div class="sidebar">
+        <?php if (isset($_SESSION['photo']) && $_SESSION['photo'] != ''): ?>
+            <img src="<?php echo $_SESSION['photo']; ?>" alt="Photo de profil" width="80" height="80" />
+        <?php else: ?>
+            <img src="default-avatar.png" alt="Photo de profil" width="80" height="80" />
+        <?php endif; ?>
         <h6><?php echo htmlspecialchars($user['nom']) . ' ' . htmlspecialchars($user['prenom']); ?></h6>
         <p><?php echo htmlspecialchars($user['email']); ?></p>
         <a href="Accueil.php"><i class="material-icons">home</i> Accueil</a>
-        <a href="#"><i class="material-icons">account_circle</i> Profil</a>
-        <a href="#"><i class="material-icons">favorite</i> Favoris</a>
-        <a href="#"><i class="material-icons">bookmark</i> Enregistrements</a>
-        <a href="#"><i class="material-icons">drafts</i> Brouillons</a>
-        <a href="#"><i class="material-icons">exit_to_app</i> Déconnexion</a>
-        <a href="#"><i class="material-icons">notifications</i> Notifications</a>
+        <a href="Profil.php"><i class="material-icons">account_circle</i> Profil</a>
+        <a href="Favoris.php"><i class="material-icons">favorite</i> Favoris</a>
+        <a href="Enregistrement.php"><i class="material-icons">bookmark</i> Enregistrements</a>
+        <a href="Brouillons.php"><i class="material-icons">drafts</i> Brouillons</a>
+        <a href="Deconnexion.php"><i class="material-icons">exit_to_app</i> Déconnexion</a>
+        <a href="Historique.php"><i class="material-icons">history</i> Historique</a>
+        <a href="Notifications"><i class="material-icons">notifications</i> Notifications</a>
     </div>
 
     <!-- Contenu principal -->
     <div class="content">
-        
-
         <div class="row">
             <?php if (!empty($recettes)): ?>
                 <?php foreach ($recettes as $recette): ?>
@@ -118,11 +68,14 @@ $recettes = $stmt->fetchAll();
                                 <p><?php echo htmlspecialchars($recette['titre']); ?></p>
                             </div>
                             <div class="card-action">
+                                <a href="Recette.php?id=<?php echo $recette['id']; ?>" class="btn green waves-effect waves-light">
+                                    <i class="material-icons center">visibility</i> 
+                                </a>
                                 <a href="ModifierRecette.php?id=<?php echo $recette['id']; ?>" class="btn blue lighten-1 waves-effect waves-light">
-                                    <i class="material-icons left">edit</i> Modifier
+                                    <i class="material-icons center">edit</i>
                                 </a>
                                 <a href="SupprimerRecette.php?id=<?php echo $recette['id']; ?>" class="btn red darken-1 waves-effect waves-light">
-                                    <i class="material-icons left">delete</i> Supprimer
+                                    <i class="material-icons center">delete</i>
                                 </a>
                             </div>
                         </div>

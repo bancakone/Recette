@@ -28,26 +28,24 @@ if (isset($_GET['id'])) {
         $description = $_POST['description'];
         $portions = $_POST['portions'];
         $duree = $_POST['duree'];
-        $ingredients = $_POST['ingredients'];
-        $methode = $_POST['methodes'];
+        
+        // Convertir les tableaux en chaînes
+        $ingredients = implode(", ", $_POST['ingredients']);
+        $methode = implode("\n", $_POST['methodes']);
         
         // Gestion de l'image
         $image = $recette['photo']; // Image par défaut (ancienne image)
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-            // Validation de l'image (type et taille)
             $imageTmpPath = $_FILES['photo']['tmp_name'];
             $imageName = $_FILES['photo']['name'];
             $imageExtension = pathinfo($imageName, PATHINFO_EXTENSION);
             $validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 
             if (in_array(strtolower($imageExtension), $validExtensions)) {
-                // Générer un nom unique pour l'image
                 $newImageName = uniqid('recette_', true) . '.' . $imageExtension;
-                $imagePath = 'uploads/' . $newImageName;
-
-                // Déplacer l'image vers le dossier "uploads"
+                $imagePath = 'images/' . $newImageName;
                 move_uploaded_file($imageTmpPath, $imagePath);
-                $image = $imagePath; // Mettre à jour le chemin de l'image
+                $image = $imagePath;
             } else {
                 echo "Extension d'image invalide. Utilisez jpg, jpeg, png, ou gif.";
                 exit();
@@ -75,6 +73,7 @@ if (isset($_GET['id'])) {
 ?>
 
 
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -85,65 +84,46 @@ if (isset($_GET['id'])) {
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         body {
+            background: #f5f5f5;
             display: flex;
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-        }
-        .sidebar {
-            width: 250px;
-            background: #fff;
-            padding: 20px;
             height: 100vh;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
         }
-        .content {
+        .left-section, .right-section {
             flex: 1;
-            padding: 20px;
+            height: 100vh;
+        }
+        .left-section {
+            background: url('background.jpg') center/cover;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .right-section {
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
         }
         .container {
+            width: 100%;
+            max-width: 700px;
             background: white;
-            padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 2px solid #ddd;
-        }
-        .input-field input, .input-field textarea {
-            font-size: 1rem;
-            border-bottom: 2px solid #ff7675;
-        }
-        .btn-small {
-            width: 40%;
-            margin: 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 20px;
-        }
-        .btn-floating {
-            background-color: #ff7675;
-        }
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-top: 20px;
+            padding: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <ul>
-            <li><a href="Profil.php">Profil</a></li>
-            <li><a href="MesPublications.php">Mes Publications</a></li>
-            <li><a href="Deconnexion.php">Déconnexion</a></li>
-        </ul>
+    <div class="left-section">
+        Nom de l'Application
     </div>
-
-    <div class="content">
+    <div class="right-section">
         <div class="container">
             <div class="header">
                 <a href="Publication.php" class="material-icons">close</a>
@@ -151,42 +131,95 @@ if (isset($_GET['id'])) {
             </div>
             
             <form method="POST" enctype="multipart/form-data">
-            <div class="section-title">Image</div>
-                <div class="input-field">
-                    <input type="file" name="photo" accept="image/*">
+                <div class="file-field input-field">
+                    <div class="btn red">
+                        <span>Photo</span>
+                        <input type="file" id="file-input" name="photo" accept="image/*" onchange="previewImage(event)" >
+
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text" placeholder="Modifier la photo">
+                    </div>
+                </div>
+                <div id="image-preview" class="center">
+                    <img id="preview-img" src="<?php echo htmlspecialchars($recette['photo']); ?>" alt="Prévisualisation" style="max-width:10%;">
                 </div>
 
-                <div class="section-title">Informations de la Recette</div>
-                <div class="input-field">
-                    <input type="text" name="titre" value="<?php echo htmlspecialchars($recette['titre']); ?>" required>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input type="text" id="titre" name="titre" value="<?php echo htmlspecialchars($recette['titre']); ?>" required>
+                        <label for="titre">Titre</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input type="text" id="duree" name="duree" value="<?php echo htmlspecialchars($recette['duree']); ?>" required>
+                        <label for="duree">Durée (ex: 30 min)</label>
+                    </div>
                 </div>
-                <div class="input-field">
-                    <textarea name="description" class="materialize-textarea" required><?php echo htmlspecialchars($recette['description']); ?></textarea>
+
+                <div class="row">
+                    <div class="input-field col s6">
+                        <textarea id="description" name="description" class="materialize-textarea" required><?php echo htmlspecialchars($recette['description']); ?></textarea>
+                        <label for="description">Description</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input type="number" id="portions" name="portions" min="1" value="<?php echo htmlspecialchars($recette['portions']); ?>" required>
+                        <label for="portions">Portions</label>
+                    </div>
                 </div>
-                
-                <div class="section-title">Ingrédients & Méthode</div>
-                <div class="input-field">
-                    <input type="text" name="ingredients" value="<?php echo htmlspecialchars($recette['ingredients']); ?>" required>
-                </div>
-                <div class="input-field">
-                    <textarea name="methode" class="materialize-textarea" required><?php echo htmlspecialchars($recette['methodes']); ?></textarea>
-                </div>
-                
-                <div class="section-title">Détails</div>
-                <div class="input-field">
-                    <input type="number" name="portions" value="<?php echo htmlspecialchars($recette['portions']); ?>" min="1" required>
-                </div>
-                <div class="input-field">
-                    <input type="text" name="duree" value="<?php echo htmlspecialchars($recette['duree']); ?>" required>
+
+                <div class="row">
+                    <div class="input-field col s6" id="ingredients-container">
+                        <label>Ingrédients</label>
+                        <input type="text" name="ingredients[]" value="<?php echo htmlspecialchars($recette['ingredients']); ?>" required>
+                        <a class="btn-floating btn-small red" onclick="ajouterIngredient()">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </div>
+                    <div class="input-field col s6" id="methodes-container">
+                        <label>Méthodes</label>
+                        <input type="text" name="methodes[]" value="<?php echo htmlspecialchars($recette['methodes']); ?>" required>
+                        <a class="btn-floating btn-small red" onclick="ajouterMethode()">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </div>
                 </div>
                 
                 <div class="row center">
-                    <button type="submit" class="btn btn-small red">Enregistrer les modifications</button>
+                    <button type="submit" class="btn red">Enregistrer les modifications</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+       function previewImage(event) {
+    alert("Image sélectionnée !");
+    let reader = new FileReader();
+    reader.onload = function() {
+        let output = document.getElementById('preview-img');
+        output.src = reader.result;
+        output.style.display = 'block';
+    }
+    reader.readAsDataURL(event.target.files[0]);
+}
+
+
+        function ajouterIngredient() {
+            let container = document.getElementById("ingredients-container");
+            let input = document.createElement("input");
+            input.type = "text";
+            input.name = "ingredients[]";
+            container.appendChild(input);
+        }
+
+        function ajouterMethode() {
+            let container = document.getElementById("methodes-container");
+            let input = document.createElement("input");
+            input.type = "text";
+            input.name = "methodes[]";
+            container.appendChild(input);
+        }
+    </script>
 </body>
 </html>

@@ -5,6 +5,27 @@ include('config.php'); // Connexion à la base de données
 // Limite de 4 recettes pour la page d'accueil
 $limite = 4;
 
+// Vérification si l'utilisateur est connecté et si une recette a été consultée
+if (isset($_SESSION['user_id']) && isset($_GET['id'])) {
+    $recette_id = $_GET['id'];
+
+    // Vérifier si la recette n'est pas déjà dans l'historique de l'utilisateur
+    $sql_check = "SELECT * FROM historique WHERE user_id = :user_id AND recette_id = :recette_id";
+    $stmt_check = $pdo->prepare($sql_check);
+    $stmt_check->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $stmt_check->bindParam(':recette_id', $recette_id, PDO::PARAM_INT);
+    $stmt_check->execute();
+
+    // Si la recette n'est pas déjà dans l'historique, l'ajouter
+    if ($stmt_check->rowCount() == 0) {
+        $sql_insert = "INSERT INTO historique (user_id, recette_id) VALUES (:user_id, :recette_id)";
+        $stmt_insert = $pdo->prepare($sql_insert);
+        $stmt_insert->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+        $stmt_insert->bindParam(':recette_id', $recette_id, PDO::PARAM_INT);
+        $stmt_insert->execute();
+    }
+}
+
 // Requête pour récupérer 4 recettes pour l'actualité (recettes publiées de tous les utilisateurs)
 $sql_actualite = "SELECT * FROM recettes WHERE statut = 'publie' ORDER BY date_creation DESC LIMIT :limite";
 $stmt_actualite = $pdo->prepare($sql_actualite);
@@ -40,6 +61,19 @@ foreach ($historique as $item) {
     $recette_details = $stmt_recette->fetch();
     $historique_recettes[] = $recette_details;
 }
+
+// Supposons que l'utilisateur est déjà authentifié et que $_SESSION['user_id'] est disponible
+$stmt = $pdo->prepare("SELECT photo FROM users WHERE id = :user_id");
+$stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+$stmt->execute();
+$user = $stmt->fetch();
+
+// Vérifier si la photo existe, sinon utiliser une image par défaut
+if (isset($user['photo']) && !empty($user['photo'])) {
+    $_SESSION['photo'] = $user['photo'];
+} else {
+    $_SESSION['photo'] = 'default-avatar.png';
+}
 ?>
 
 
@@ -54,14 +88,183 @@ foreach ($historique as $item) {
     <title>Tableau de Bord - Recettes</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="CSS/Accueil1.css">
+    <!-- <link rel="stylesheet" href="CSS/Accueil1.css"> -->
+    <style>
+          /* Ajout de styles personnalisés */
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f9f9f9;
+  }
+
+  .sidebar {
+    background-color: #37474F; /* Couleur plus foncée pour un meilleur contraste */
+    padding: 20px;
+    height: 100vh;
+    color: #fff;
+    position: fixed;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .sidebar .profile {
+    margin-bottom: 20px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .sidebar img {
+    border-radius: 50%;
+    margin-bottom: 10px;
+    width: 100px;
+    height: 100px;
+    border: 3px solid #ff5722;
+  }
+
+  .sidebar h2 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 5px 0;
+    color: #ffffff;
+  }
+
+  .sidebar p {
+    font-size: 14px;
+    margin: 0;
+    color: #cfd8dc;
+  }
+
+  .sidebar ul {
+    padding: 0;
+    list-style: none;
+    width: 100%;
+  }
+
+  .sidebar ul li {
+    width: 100%;
+  }
+
+  .sidebar ul li a {
+    color: white !important;
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    text-decoration: none;
+    transition: 0.3s;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .sidebar ul li a:hover {
+    background-color: #ff5722;
+    transform: translateX(5px);
+  }
+
+  .sidebar ul li a .material-icons {
+    margin-right: 15px;
+    font-size: 20px;
+  }
+
+  .content {
+    margin-left: 270px;
+    padding: 30px;
+  }
+
+  .carousel {
+    margin-bottom: 30px;
+  }
+
+  .grid {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .card {
+    width: 23%;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .card img {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+  }
+
+  .card p {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #37474F;
+  }
+
+  .card:hover {
+    transform: scale(1.05);
+  }
+
+  .view-more {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .view-more a {
+    text-decoration: none;
+    color: #000;
+    font-size: 24px;
+    transition: 0.3s;
+  }
+
+  .view-more a:hover {
+    color: #f00;
+  }
+
+  .btn-floating {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #ff5722;
+  }
+
+  .header-icons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .search-bar i {
+    margin-right: 10px;
+  }
+
+  .right-items span {
+    margin-right: 10px;
+  }
+
+    </style>
 </head>
 <body>
     <div class="sidebar">
         <div class="profile">
             <?php if (isset($_SESSION['nom']) && isset($_SESSION['prenom']) && isset($_SESSION['email'])): ?>
                 <!-- Affichage de la photo avant le nom et prénom -->
-                <?php if (isset($_SESSION['photo'])): ?>
+                <?php if (isset($_SESSION['photo']) && $_SESSION['photo'] != ''): ?>
                     <img src="<?php echo $_SESSION['photo']; ?>" alt="Photo de profil" width="80" height="80" />
                 <?php else: ?>
                     <img src="default-avatar.png" alt="Photo de profil" width="80" height="80" />
@@ -72,6 +275,7 @@ foreach ($historique as $item) {
                 <p><strong>Nom&Prénom</strong><br>Email</p>
             <?php endif; ?>
         </div>
+
 
         <ul>
             <li><a href="Profil.php" class="black-text"><i class="material-icons">person</i> Profil</a></li>
@@ -141,25 +345,25 @@ foreach ($historique as $item) {
 
             <h5>Recherches Récentes</h5>
 
-                    <?php if (isset($_SESSION['user_id']) && count($historique_recettes) > 0): ?>
-                        <div class="grid">
-                            <?php foreach ($historique_recettes as $recette_details): ?>
-                                <div class="card">
-                                    <a href="Recette.php?id=<?php echo $recette_details['id']; ?>">
-                                        <img src="<?php echo $recette_details['photo']; ?>" alt="Image de la recette">
-                                        <p><?php echo $recette_details['titre']; ?></p>
-                                    </a>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <div class="view-more">
-                            <a href="Historique.php">
-                                <i class="material-icons">arrow_forward</i>
+                        <?php if (isset($_SESSION['user_id']) && count($historique_recettes) > 0): ?>
+                <div class="grid">
+                    <?php foreach ($historique_recettes as $recette_details): ?>
+                        <div class="card">
+                            <a href="Recette.php?id=<?php echo $recette_details['id']; ?>">
+                                <img src="<?php echo $recette_details['photo']; ?>" alt="Image de la recette">
+                                <p><?php echo $recette_details['titre']; ?></p>
                             </a>
                         </div>
-                    <?php else: ?>
-                        <p>Aucune recherche récente disponible.</p>
+                    <?php endforeach; ?>
+                </div>
+                <?php else: ?>
+                    <p>Aucune recherche récente disponible.</p>
                     <?php endif; ?>
+                    <div class="view-more">
+                        <a href="Historique.php">
+                            <i class="material-icons">arrow_forward</i>
+                        </a>
+                    </div>
 
 
 

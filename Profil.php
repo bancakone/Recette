@@ -23,7 +23,6 @@ if (!$user) {
 }
 
 // Traitement du formulaire de mise à jour
-// Traitement du formulaire de mise à jour
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nom = $_POST['nom'];
     $prenom = $_POST['prenom'];
@@ -63,64 +62,154 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: Accueil.php");
     exit();
 }
-
-
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier le Profil</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="CSS/Profil.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes blinkText {
+            50% { opacity: 0; }
+        }
+        @keyframes slideBackground {
+            0% { background-position: -100% 0; }
+            100% { background-position: 100% 0; }
+        }
+        @keyframes gradientText {
+            0% { background-position: -100% 0; }
+            100% { background-position: 100% 0; }
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #fff8e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+        .image-section {
+            width: 50%;
+            position: relative;
+            background: url('uploads/istockphoto-1327954795-612x612.jpg') no-repeat center center/cover;
+            filter: brightness(50%);
+            animation: slideBackground 8s infinite linear;
+        }
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .form-section {
+            width: 50%;
+            padding: 50px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #ffcc80;
+        }
+        .animated-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #d84315;
+            animation: fadeIn 2s ease-out, blinkText 1s infinite;
+            background: linear-gradient(90deg, #ff5722, #e64a19);
+            background-size: 200% 100%;
+            color: transparent;
+            -webkit-background-clip: text;
+            animation: gradientText 4s ease-in-out infinite;
+        }
+        h2 {
+            color: #d84315;
+            animation: fadeIn 2s ease-out;
+        }
+        .input-group {
+            margin: 15px 0;
+            text-align: left;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="email"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d84315;
+            border-radius: 5px;
+            background-color: #fff3e0;
+        }
+        .btn {
+            background: #ff5722;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: #e64a19;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="card">
-            <h4>Modifier votre Profil</h4>
-
+        <div class="image-section">
+            <div class="image-overlay">
+                <h1 class="animated-title">Bienvenue sur CookPad !</h1>
+                <p class="animated-title">“La cuisine, c'est le partage et l'amour des bons plats.”</p>
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="animated-title">CookPad</div>
+            <h2>Modifier votre Profil</h2>
             <form action="Profil.php" method="POST" enctype="multipart/form-data">
-                <!-- Nom -->
-                <div class="input-field">
-                    <input id="nom" type="text" class="validate" name="nom" value="<?php echo htmlspecialchars($user['nom']); ?>" required>
+                <div class="input-group">
                     <label for="nom">Nom</label>
+                    <input type="text" id="nom" name="nom" value="<?php echo htmlspecialchars($user['nom']); ?>" required>
                 </div>
-
-                <!-- Prénom -->
-                <div class="input-field">
-                    <input id="prenom" type="text" class="validate" name="prenom" value="<?php echo htmlspecialchars($user['prenom']); ?>" required>
+                <div class="input-group">
                     <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" value="<?php echo htmlspecialchars($user['prenom']); ?>" required>
                 </div>
-
-                <!-- Email -->
-                <div class="input-field">
-                    <input id="email" type="email" class="validate" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                <div class="input-group">
                     <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
                 </div>
-
-                <!-- Photo de profil -->
-                <div class="file-field input-field">
-                    <div class="btn">
-                        <span>Changer la photo</span>
-                        <input type="file" id="photo" name="photo" accept="image/*">
-                    </div>
-                    <div class="file-path-wrapper">
-                        <input class="file-path validate" type="text" placeholder="Choisir une photo de profil">
-                    </div>
+                <div class="input-group">
+                    <label for="photo">Photo de profil</label>
+                    <input type="file" id="photo" name="photo">
                 </div>
-
-                <!-- Bouton de mise à jour -->
                 <button type="submit" class="btn">Mettre à jour</button>
             </form>
         </div>
-
-        <div class="footer-text">
-            <p><a href="Accueil.php">Retour à l'accueil</a></p>
-        </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>

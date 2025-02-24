@@ -1,105 +1,126 @@
 <?php
-// Connexion à la base de données
-$conn = new PDO("mysql:host=localhost;dbname=recette", "root", "");
-$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+session_start();
+include('config.php');
 
-// Vérifier si un ID est présent dans l'URL
-if (isset($_GET['id'])) {
-    $id = intval($_GET['id']);
+if (!isset($_GET['id'])) {
+    die("Recette introuvable.");
+}
 
-    // Récupérer les infos de la recette avec les informations de l'auteur
-    $stmt = $conn->prepare("
-    SELECT r.*, u.nom, u.prenom, DATE_FORMAT(r.date_creation, '%d/%m/%Y à %H:%i') AS date_creation
-    FROM recettes r
-    JOIN users u ON r.user_id = u.id
-    WHERE r.id = ?
-");
-    $stmt->execute([$id]);
-    $recette = $stmt->fetch(PDO::FETCH_ASSOC);
+$recette_id = $_GET['id'];
+$sql = "SELECT r.*, u.nom AS auteur FROM recettes r JOIN users u ON r.user_id = u.id WHERE r.id = :id";
+$stmt = $pdo->prepare($sql);
+$stmt->execute(['id' => $recette_id]);
+$recette = $stmt->fetch();
 
-    // Vérifier si la recette existe
-    if (!$recette) {
-        die("Recette introuvable.");
-    }
-} else {
-    die("Aucune recette spécifiée.");
+if (!$recette) {
+    die("Recette introuvable.");
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détails de la Recette</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <title><?= htmlspecialchars($recette['titre']) ?></title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="CSS/Recette.css">
+    <style>
+        body { display: flex; background: #f8f9fa; font-family: 'Roboto', sans-serif; }
+        .sidebar { width: 280px; background: #2c3e50; padding: 20px; color: white; height: 100vh; position: fixed; }
+        .content { margin-left: 300px; flex: 1; padding: 20px; }
+        .recette-header { display: flex; align-items: flex-start; gap: 20px; }
+        .recette-img { width: 50%; border-radius: 10px; }
+        .recette-info { width: 50%; }
+        .recette-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .recette-actions { display: flex; gap: 15px; }
+        .stars { display: flex; gap: 5px; cursor: pointer; margin-bottom: 20px; }
+        .stars i { color: #ccc; }
+        .stars i.active { color: gold; }
+        .comment-section { margin-top: 20px; }
+        .published-container { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+        .subscribe-btn { padding: 10px 20px; background: #ff5722; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .details-container { display: flex; justify-content: space-between; margin-top: 20px; }
+        .details-container div { width: 48%; }
+        .quantity-control { display: flex; align-items: center; gap: 10px; margin-top: 20px; }
+        .quantity-btn { padding: 5px 10px; background: #ff5722; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .quantity { font-size: 18px; }
+    </style>
 </head>
 <body>
     <div class="sidebar">
-        <h5>Nom&Prénom</h5>
-        <p>Email</p>
+        <h6>Menu</h6>
         <ul>
-    <li><a href="Accueil.php"><i class="material-icons">home</i> Accueil</a></li>
-    <li><a href="Profil.php"><i class="material-icons">person</i> Profil</a></li>
-    <li><a href="Favoris.php"><i class="material-icons">favorite</i> Favoris</a></li>
-    <li><a href="Enregistrements.php"><i class="material-icons">bookmark</i> Enregistrements</a></li>
-    <li><a href="Brouillons.php"><i class="material-icons">save</i> Brouillons</a></li>
-</ul>
-
+            <li><a href="dashboard.php"><i class="material-icons">home</i> Accueil</a></li>
+            <li><a href="profil.php"><i class="material-icons">person</i> Profil</a></li>
+        </ul>
     </div>
-
-    <div class="container">
-        <div class="recipe-image">
-        <img src="<?php echo htmlspecialchars($recette['photo']); ?>" alt="Image de la recette">
-        <!-- Ajoutez ceci pour déboguer -->
+    <div class="content">
+        <div class="recette-header">
+            <img src="<?= htmlspecialchars($recette['photo']) ?>" class="recette-img" alt="Recette">
+            <div class="recette-info">
+                <div class="recette-title">
+                    <h4><?= htmlspecialchars($recette['titre']) ?></h4>
+                    <div class="recette-actions">
+                        <i class="material-icons">favorite_border</i>
+                        <i class="material-icons">bookmark_border</i>
+                        <i class="material-icons">cloud_download</i>
+                    </div>
+                </div>
+                <div class="stars">
+                    <i class="material-icons" onclick="rate(1)">star</i>
+                    <i class="material-icons" onclick="rate(2)">star</i>
+                    <i class="material-icons" onclick="rate(3)">star</i>
+                    <i class="material-icons" onclick="rate(4)">star</i>
+                    <i class="material-icons" onclick="rate(5)">star</i>
+                </div>
+                <p><?= nl2br(htmlspecialchars($recette['description'])) ?></p>
+                <div class="comment-section">
+            <h5>Commentaires</h5>
+            <textarea placeholder="Laisser un commentaire..." class="materialize-textarea"></textarea>
+        </div>
+            </div>
+        </div>
+        
+        <div class="details-container">
+            <div>
+                
+                <h5>Ingrédients</h5>
+                <p><?= nl2br(htmlspecialchars($recette['ingredients'])) ?></p>
+            </div>
+            <div>
+                <h5>Méthodes</h5>
+                <p><?= nl2br(htmlspecialchars($recette['methodes'])) ?></p>
+            </div>
+        </div>
+    
        
 
-        </div>
-        <div class="recipe-content">
-            <div class="header">
-            <h4><?php echo htmlspecialchars($recette['titre']); ?></h4>
-                <div class="icons">
-                    <i class="material-icons">favorite_border</i>
-                    <i class="material-icons">share</i>
-                    <i class="material-icons">file_download</i>
-                </div>
-            </div>
-            <div class="counter-container">
-                <span>Portion:</span>
-                <div class="counter">
-                    <button>-</button>
-                    <span>1</span>
-                    <button>+</button>
-                </div>
-            </div>
-            <div class="ingredients-methods">
-                <div class="ingredients">
-                    <h5>Ingrédients</h5>
-                    <ul>
-                        <?php
-                        $ingredients = explode("\n", $recette['ingredients']);
-                        foreach ($ingredients as $ingredient) {
-                            echo "<li>" . htmlspecialchars($ingredient) . "</li>";
-                        }
-                        ?>
-                    </ul>
-                </div>
-                <div class="methods">
-                    <h5>Étapes</h5>
-                    <p><?php echo nl2br(htmlspecialchars($recette['methodes'])); ?></p>
-                </div>
-            </div>
-            <div class="footer">
-            <p>Publié par <strong><?php echo htmlspecialchars($recette['prenom'] . " " . $recette['nom']); ?></strong>
-       le <?php echo htmlspecialchars($recette['date_creation']); ?></p>
-                <button class="btn waves-effect blue">S'abonner</button>
-            </div>
+        <div class="published-container">
+            <p>Publié par <?= htmlspecialchars($recette['auteur']) ?> le <?= date('d/m/Y H:i', strtotime($recette['date_creation'])) ?></p>
+            <button class="subscribe-btn">S'abonner</button>
         </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        function rate(stars) {
+            let starElements = document.querySelectorAll('.stars i');
+            starElements.forEach((star, index) => {
+                star.classList.toggle('active', index < stars);
+            });
+        }
+        
+        function increaseQuantity() {
+            let quantityElement = document.getElementById("quantity");
+            let quantity = parseInt(quantityElement.innerText);
+            quantityElement.innerText = quantity + 1;
+        }
+        
+        function decreaseQuantity() {
+            let quantityElement = document.getElementById("quantity");
+            let quantity = parseInt(quantityElement.innerText);
+            if (quantity > 1) {
+                quantityElement.innerText = quantity - 1;
+            }
+        }
+    </script>
 </body>
 </html>
