@@ -2,39 +2,47 @@
 session_start();
 include('config.php'); // Connexion à la base de données
 
-if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingredients'], $_POST['methodes'], $_POST['portions'], $_POST['duree'])) {
+$stmt = $pdo->query("SELECT * FROM categories");
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingredients'], $_POST['methodes'], $_POST['portions'], $_POST['duree'], $_POST['categorie_id'])) {
     // Récupérer les données du formulaire
     $titre = $_POST['titre'];
     $description = $_POST['description'];
-    $photo = $_FILES['photo']['name']; // Nom de l'image
-    $photoTmp = $_FILES['photo']['tmp_name']; // Temporaire pour le transfert
+    $photo = $_FILES['photo']['name'];
+    $photoTmp = $_FILES['photo']['tmp_name'];
     $portions = $_POST['portions'];
     $duree = $_POST['duree'];
-    $ingredients = implode(',', $_POST['ingredients']); // Liste d'ingrédients séparée par des virgules
-    $methodes = implode(',', $_POST['methodes']); // Liste des méthodes séparée par des virgules
-    $statut = isset($_POST['statut']) ? $_POST['statut'] : 'publie'; // Défaut : publie
+    $categorie_id = $_POST['categorie_id']; // ✅ Ajout de la catégorie
+    $ingredients = implode(',', $_POST['ingredients']);
+    $methodes = implode(',', $_POST['methodes']);
+    $statut = isset($_POST['statut']) ? $_POST['statut'] : 'publie';
+
 
     // Vérifier si une image a été téléchargée
-    if ($photo) {
-        // Déplacer l'image téléchargée dans le dossier "images/"
-        $imagePath = 'images/' . basename($photo); // Chemin final de l'image
+    if (!empty($photo)) {
+        $imagePath = 'images/' . basename($photo);
         if (move_uploaded_file($photoTmp, $imagePath)) {
             // Insérer les données dans la base de données
-            $sql = "INSERT INTO recettes (user_id, titre, description, photo, ingredients, methodes, portions, duree, statut) 
-                    VALUES (:user_id, :titre, :description, :photo, :ingredients, :methodes, :portions, :duree, :statut)";
+            $sql = "INSERT INTO recettes (user_id, titre, description, photo, ingredients, methodes, portions, duree, statut, categorie_id) 
+                    VALUES (:user_id, :titre, :description, :photo, :ingredients, :methodes, :portions, :duree, :statut, :categorie_id)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
-                ':user_id' => $_SESSION['user_id'], // Assurer que l'utilisateur est connecté
+                ':user_id' => $_SESSION['user_id'],
                 ':titre' => $titre,
                 ':description' => $description,
-                ':photo' => $imagePath, // Stocke le chemin de l'image dans la base de données
+                ':photo' => $imagePath,
                 ':ingredients' => $ingredients,
                 ':methodes' => $methodes,
                 ':portions' => $portions,
                 ':duree' => $duree,
-                ':statut' => $statut // Ajout du statut
+                ':statut' => $statut,
+                ':categorie_id' => $categorie_id
             ]);
-
+            echo "<pre>";
+            print_r($categories);
+            echo "</pre>";
             // Récupérer l'ID de la recette insérée
             $recetteId = $pdo->lastInsertId();
 
@@ -85,19 +93,20 @@ if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingr
                 }
             }
 
-            // Rediriger vers la page d'accueil ou une autre page après publication
+            // ✅ Redirection après succès
             header('Location: Accueil.php');
             exit;
         } else {
-            echo "Erreur lors de l'upload de l'image.";
+            echo "❌ Erreur lors du téléchargement de l'image.";
         }
     } else {
-        echo "Aucune image téléchargée.";
+        echo "❌ Aucune image sélectionnée.";
     }
 } else {
-    // echo "Erreur lors de l'ajout de la recette. Veuillez vérifier tous les champs.";
+    // echo "❌ Tous les champs sont obligatoires.";
 }
 ?>
+
 
 
 
@@ -167,6 +176,16 @@ if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingr
                         <input class="file-path validate" type="text" placeholder="Ajouter une photo">
                     </div>
                 </div>
+                <div class="input-field col s6">
+                    <select name="categorie_id" required>
+                        <option value="" disabled selected></option>
+                        <?php foreach ($categories as $categorie) : ?>
+                            <option value="<?= $categorie['id'] ?>"><?= htmlspecialchars($categorie['nom']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <label>Catégorie</label>
+                </div>
+
                 <div id="image-preview" class="center">
                     <img id="preview-img" src="" alt="Prévisualisation" style="display: none; max-width: 100%;">
                 </div>
@@ -252,6 +271,14 @@ if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingr
             document.getElementById('statut').value = "brouillon";
             document.querySelector("form").submit();
         }
+       
+        document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('select');
+    M.FormSelect.init(elems);
+});
+
+
+
     </script>
 </body>
 </html>

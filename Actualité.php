@@ -48,7 +48,7 @@ if (isset($_SESSION['user_id'])) {
         }
         .sidebar a {
             display: block;
-            padding: 10px;
+            padding: 9px;
             color: white;
             text-decoration: none;
         }
@@ -57,7 +57,7 @@ if (isset($_SESSION['user_id'])) {
         }
         .content {
             margin-left: 270px;
-            padding: 20px;
+            padding: 50px;
             width: 100%;
         }
         .grid {

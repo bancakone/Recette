@@ -155,7 +155,22 @@ body {
     text-align: center;
 }
 
+.sidebar ul li a {
+    color: white !important;
+    display: flex;
+    align-items: center;
+    padding: 9px 13px;
+    text-decoration: none;
+    transition: 0.3s;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 500;
+  }
 
+        .sidebar ul li a:hover {
+    background-color: #ff5722;
+    transform: translateX(5px);
+  }
 
 </style>
 <body>

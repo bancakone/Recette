@@ -8,8 +8,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
-// $user_id = $_GET['user_id'];
+// $user_id = $_SESSION['user_id'];
+$user_id = $_GET['user_id'];
 
 // Récupérer les infos utilisateur
 $sql_user = "SELECT nom, prenom, email , photo FROM users WHERE id = :user_id";

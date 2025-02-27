@@ -2,11 +2,14 @@
 session_start();
 include('config.php'); // Connexion à la base de données
 
+$stmt = $pdo->query("SELECT * FROM categories");
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Vérifie si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: Connexion.php');
     exit();
 }
+
 
 if (isset($_GET['id'])) {
     $recette_id = $_GET['id'];
@@ -52,19 +55,23 @@ if (isset($_GET['id'])) {
             }
         }
 
-        // Mise à jour des données dans la base
-        $sql = "UPDATE recettes SET titre = :titre, description = :description, portions = :portions, duree = :duree, ingredients = :ingredients, methodes = :methodes, photo = :photo WHERE id = :id";
+        $sql = "UPDATE recettes 
+        SET titre = :titre, description = :description, portions = :portions, duree = :duree, 
+            ingredients = :ingredients, methodes = :methodes, photo = :photo, categorie_id = :categorie_id 
+        WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            'titre' => $titre, 
-            'description' => $description, 
-            'portions' => $portions, 
-            'duree' => $duree, 
-            'ingredients' => $ingredients,
-            'methodes' => $methode,
-            'photo' => $image,
-            'id' => $recette_id
-        ]);
+    'titre' => $titre, 
+    'description' => $description, 
+    'portions' => $portions, 
+    'duree' => $duree, 
+    'ingredients' => $ingredients,
+    'methodes' => $methode,
+    'photo' => $image,
+    'categorie_id' => $_POST['categorie_id'],  // Nouvelle catégorie
+    'id' => $recette_id
+]);
+
 
         header('Location: Publication.php');
         exit();
@@ -141,6 +148,20 @@ if (isset($_GET['id'])) {
                         <input class="file-path validate" type="text" placeholder="Modifier la photo">
                     </div>
                 </div>
+                <div class="row">
+    <div class="input-field col s12">
+        <select name="categorie_id" required>
+            <option value="" disabled selected>Choisir une catégorie</option>
+            <?php foreach ($categories as $categorie): ?>
+                <option value="<?= $categorie['id'] ?>" <?= ($categorie_id_actuelle == $categorie['id']) ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($categorie['nom']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <label>Catégorie</label>
+    </div>
+</div>
+
                 <div id="image-preview" class="center">
                     <img id="preview-img" src="<?php echo htmlspecialchars($recette['photo']); ?>" alt="Prévisualisation" style="max-width:10%;">
                 </div>
@@ -220,6 +241,13 @@ if (isset($_GET['id'])) {
             input.name = "methodes[]";
             container.appendChild(input);
         }
+        
+document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('select');
+    M.FormSelect.init(elems);
+});
+
+
     </script>
 </body>
 </html>

@@ -159,7 +159,7 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
   .sidebar ul {
     padding: 0;
     list-style: none;
-    width: 90%;
+    width: 100%;
   }
 
   .sidebar ul li {
@@ -170,7 +170,7 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
     color: white !important;
     display: flex;
     align-items: center;
-    padding: 9px 15px;
+    padding: 9px 13px;
     text-decoration: none;
     transition: 0.3s;
     border-radius: 5px;
@@ -280,7 +280,7 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
     margin-top: 10px;
     text-align: center;
     color: #cfd8dc;
-}
+  }
 
 .abonnements-info p {
     margin: 5px 0;
@@ -399,14 +399,16 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
         <i class="material-icons">menu</i>
     </a>
 </div>
-<ul id="dropdown-categories" class="dropdown-content">
-    <li><a href="Categorie.php?nom=Petit-déjeuner">Petit-déjeuner</a></li>
-    <li><a href="Categorie.php?nom=Déjeuner">Déjeuner</a></li>
-    <li><a href="Categorie.php?nom=Dîner">Dîner</a></li>
-    <li><a href="Categorie.php?nom=Dessert">Dessert</a></li>
-    <li><a href="Categorie.php?nom=Plat-Africain">Plat-Africain</a></li>
-</ul>
 
+<ul id="dropdown-categories" class="dropdown-content">
+    <?php
+    $sql_categories = "SELECT nom FROM categories";
+    $result_categories = $conn->query($sql_categories);
+    while ($row = $result_categories->fetch_assoc()) {
+        echo '<li><a href="Categorie.php?nom=' . urlencode($row['nom']) . '">' . htmlspecialchars($row['nom']) . '</a></li>';
+    }
+    ?>
+</ul>
         </div>
 
         <h5>Actualité</h5>
