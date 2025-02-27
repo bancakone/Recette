@@ -6,6 +6,10 @@ include('config.php'); // Connexion à la base de données
 // Limite de 4 recettes pour la page d'accueil
 $limite = 4;
 
+// Récupération des catégories
+$query = $pdo->query("SELECT nom FROM categories");
+$categories = $query->fetchAll(PDO::FETCH_ASSOC);
+
 // Vérification si l'utilisateur est connecté et si une recette a été consultée
 if (isset($_SESSION['user_id']) && isset($_GET['id'])) {
     $recette_id = $_GET['id'];
@@ -118,7 +122,7 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
 
   .sidebar {
     background-color: #37474F; /* Couleur plus foncée pour un meilleur contraste */
-    padding: 20px;
+    padding: 18px;
     height: 100vh;
     color: #fff;
     position: fixed;
@@ -130,7 +134,7 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
   }
 
   .sidebar .profile {
-    margin-bottom: 20px;
+    margin-bottom: 1px;
     text-align: center;
     width: 100%;
   }
@@ -170,7 +174,7 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
     color: white !important;
     display: flex;
     align-items: center;
-    padding: 9px 15px;
+    padding: 9px 10px;
     text-decoration: none;
     transition: 0.3s;
     border-radius: 5px;
@@ -329,7 +333,7 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
                 <p><strong>Nom&Prénom</strong><br>Email</p>
             <?php endif; ?>
             <div class="abonnements-info">
-    <p><strong>Abonnés :</strong> <?php echo $nb_abonnes; ?>      <strong>Abonnements :</strong> <?php echo $nb_abonnements; ?></p>
+
 </div>
 
         </div>
@@ -393,19 +397,20 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
 
 
             </div>
-            <div class="right-items">
+ 
+
+<div class="right-items">
     <span>Catégories</span>
     <a class="dropdown-trigger" href="#" data-target="dropdown-categories">
         <i class="material-icons">menu</i>
     </a>
 </div>
 <ul id="dropdown-categories" class="dropdown-content">
-    <li><a href="Categorie.php?nom=Petit-déjeuner">Petit-déjeuner</a></li>
-    <li><a href="Categorie.php?nom=Déjeuner">Déjeuner</a></li>
-    <li><a href="Categorie.php?nom=Dîner">Dîner</a></li>
-    <li><a href="Categorie.php?nom=Dessert">Dessert</a></li>
-    <li><a href="Categorie.php?nom=Plat-Africain">Plat-Africain</a></li>
+    <?php foreach ($categories as $categorie): ?>
+        <li><a href="Categorie.php?nom=<?= urlencode($categorie['nom']) ?>"><?= htmlspecialchars($categorie['nom']) ?></a></li>
+    <?php endforeach; ?>
 </ul>
+
 
         </div>
 
@@ -419,6 +424,7 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
                     </a>
                 </div>
             <?php endforeach; ?>
+          
         </div>
         <div class="view-more">
             <a href="Actualité.php"><i class="material-icons">arrow_forward</i></a>
@@ -465,6 +471,7 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
                 <a href="Publication.php"><i class="material-icons">arrow_forward</i></a>
             </div>
         <?php endif; ?>
+        
     </div>
 
     <a href="<?php echo isset($_SESSION['user_id']) ? 'Modification.php' : 'Connexion.php'; ?>" class="btn-floating btn-large red floating-btn">
@@ -480,20 +487,39 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
             });
         });
         document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("search").addEventListener("keyup", function() {
-        let query = this.value;
+    let searchInput = document.getElementById("search");
+    let resultatsDiv = document.getElementById("resultats");
+    let recettesDiv = document.querySelector(".grid");
 
-        if (query.length > 2) { // Rechercher après 3 caractères
+    searchInput.addEventListener("keyup", function() {
+        let query = this.value.trim();
+
+        if (query.length > 2) { // Activer la recherche après 3 caractères
             fetch("Recherche.php?q=" + query)
                 .then(response => response.text())
                 .then(data => {
-                    document.getElementById("resultats").innerHTML = data;
+                    if (data.trim() === "") {
+                        resultatsDiv.innerHTML = "<p>Aucune recette trouvée.</p>";
+                        recettesDiv.style.display = "none"; // Cacher toutes les recettes
+                    } else {
+                        resultatsDiv.innerHTML = data;
+                        recettesDiv.style.display = "none"; // Cacher la liste originale
+                    }
                 });
         } else {
-            document.getElementById("resultats").innerHTML = ""; // Vider les résultats
+            resultatsDiv.innerHTML = ""; // Effacer les résultats
+            recettesDiv.style.display = "flex"; // Réafficher la liste originale
         }
     });
 });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.dropdown-trigger');
+        M.Dropdown.init(elems);
+    });
+
+
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     

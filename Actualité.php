@@ -33,13 +33,11 @@ if (isset($_SESSION['user_id'])) {
         }
         .sidebar {
             width: 250px;
-            background: #2c3e50;
-            padding: 20px;
-            color: white;
             height: 100vh;
             position: fixed;
-            left: 0;
-            top: 0;
+            background-color: #343a40;
+            color: white;
+            padding: 20px;
         }
         .sidebar img {
             border-radius: 50%;
@@ -47,23 +45,37 @@ if (isset($_SESSION['user_id'])) {
             margin: 0 auto 10px;
         }
         .sidebar a {
-            display: block;
-            padding: 9px;
-            color: white;
-            text-decoration: none;
+            color: white !important;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    text-decoration: none;
+    transition: 0.3s;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 500;
+    
+        }
+        .sidebar a i{
+            margin-right : 20px;
         }
         .sidebar a:hover {
-            background: #34495e;
+            background-color: #ff5722;
+            transform: translateX(5px);
+            border-radius: 15px;
+        }
+        .user-info p{
+            margin-bottom: 12px;
         }
         .content {
             margin-left: 270px;
-            padding: 50px;
+            padding: 5px;
             width: 100%;
         }
         .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            display: flex;
+            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            gap: 2px;
         }
         .card {
             border-radius: 10px;
@@ -71,18 +83,41 @@ if (isset($_SESSION['user_id'])) {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             background: white;
             text-align: center;
-            padding-bottom: 10px;
+            padding-bottom: 1px;
         }
         .card img {
             width: 100%;
-            height: 300px;
+            height: 250px;
             object-fit: cover;
         }
         .card p {
             font-weight: bold;
             color: #007bff;
-            margin-top: 10px;
+            margin-top: 1px;
+            height: 50px;
         }
+        .search-bar {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 250px; /* Réduit la largeur */
+}
+
+.search-bar i {
+    font-size: 18px;
+    color: gray;
+    margin-right: 5px;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+}
     </style>
 </head>
 <body>
@@ -103,10 +138,16 @@ if (isset($_SESSION['user_id'])) {
         <a href="Publication.php"><i class="material-icons">post_add</i> Publications</a>
         <a href="Deconnexion.php"><i class="material-icons">exit_to_app</i> Déconnexion</a>
         <a href="Historique.php"><i class="material-icons">history</i> Historique</a>
-        <a href="Notifications.php"><i class="material-icons">notifications</i> Notifications</a>
+        <a href="Notification.php"><i class="material-icons">notifications</i> Notifications</a>
     </div>
     <div class="content">
         <h5>Toutes les Recettes</h5>
+        <div class="left-items">
+              <div class="search-bar">
+                  <i class="material-icons">search</i>
+                  <input type="text" id="search" name="query" placeholder="Rechercher..." required>
+              </div>
+              <div id="resultats"></div>
         <div class="grid">
             <?php foreach ($recettes_actualite as $recette): ?>
                 <div class="card">
@@ -118,5 +159,34 @@ if (isset($_SESSION['user_id'])) {
             <?php endforeach; ?>
         </div>
     </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+    let searchInput = document.getElementById("search");
+    let resultatsDiv = document.getElementById("resultats");
+    let recettesDiv = document.querySelector(".grid");
+
+    searchInput.addEventListener("keyup", function() {
+        let query = this.value.trim();
+
+        if (query.length > 2) { // Activer la recherche après 3 caractères
+            fetch("Recherche.php?q=" + query)
+                .then(response => response.text())
+                .then(data => {
+                    if (data.trim() === "") {
+                        resultatsDiv.innerHTML = "<p>Aucune recette trouvée.</p>";
+                        recettesDiv.style.display = "none"; // Cacher toutes les recettes
+                    } else {
+                        resultatsDiv.innerHTML = data;
+                        recettesDiv.style.display = "none"; // Cacher la liste originale
+                    }
+                });
+        } else {
+            resultatsDiv.innerHTML = ""; // Effacer les résultats
+            recettesDiv.style.display = "flex"; // Réafficher la liste originale
+        }
+    });
+});
+
+    </script>
 </body>
 </html>

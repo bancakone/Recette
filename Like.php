@@ -44,7 +44,7 @@ if ($like) {
             'user_id' => $auteur_id,
             'recette_id' => $recette_id,
             'sender_id' => $user_id,
-            'message' => $_SESSION['nom'] . " a aimé votre recette." // Ajout du nom de l'utilisateur
+            'message' => $user_info['nom'] . " " . $user_info['prenom'] . " a aimé votre recette." // Ajout du nom et prénom de l'utilisateur
         ]);
     }
 }

@@ -39,7 +39,7 @@ if ($recette && $recette['user_id'] != $sender_id) {
         'user_id'    => $recette['user_id'], // L'auteur de la recette reçoit la notif
         'sender_id'  => $sender_id, // Celui qui commente
         'recette_id' => $recette_id,
-        'message'    => "$nom_utilisateur a commenté votre recette."
+         'message'    => "$nom_utilisateur $prenom_utilisateur a commenté votre recette."
     ]);
 }
 

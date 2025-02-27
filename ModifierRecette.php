@@ -24,6 +24,8 @@ if (isset($_GET['id'])) {
         echo "Recette non trouvée.";
         exit();
     }
+// Définir la catégorie actuelle
+$categorie_id_actuelle = $recette['categorie_id'];
 
     // Traitement de la modification
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {

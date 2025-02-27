@@ -44,23 +44,18 @@ if (!empty($recette_ids)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historique des Recherches</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-   
+    <link rel="stylesheet" href="styles.css">
     <style>
       .sidebar {
-    width: 250px;
-    background-color: #37474F;
-    color: white;
-    height: 100vh; /* Pleine hauteur de l'écran */
-    padding: 10px 0; /* Moins de padding */
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow-y: auto; /* Défilement si nécessaire */
+        width: 250px;
+            height: 100vh;
+            position: fixed;
+            background-color: #343a40;
+            color: white;
+            padding: 15px;
 }
 
 /* Profil */
@@ -98,34 +93,34 @@ if (!empty($recette_ids)) {
     font-size: 16px; /* Augmenté */
     text-decoration: none;
     transition: 0.3s;
+    font-weight: bold;
 }
 
-.sidebar a i {
-    font-size: 20px; /* Augmenté */
-    margin-right: 30px; /* Ajusté */
-}
 
 .sidebar a:hover {
-    background-color: #455A64;
-    border-radius: 5px;
+    background-color: #ff5722;
+    transform: translateX(5px);
+    border-radius: 10px;
 }
-
-.sidebar ul li a {
+.sidebar a i {
+   /*  font-size: 20px; Augmenté 
+    margin-right: 10px;*/
     color: white !important;
     display: flex;
     align-items: center;
-    padding: 9px 13px;
+    padding: 2px 25px;
     text-decoration: none;
     transition: 0.3s;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 500;
-  }
+    border-radius: 10px;
 
-        .sidebar ul li a:hover {
-    background-color: #ff5722;
-    transform: translateX(5px);
-  }
+    font-weight: 900;
+    font-size: 20px; /* Augmenté (ajuste selon tes préférences) */
+    margin-right: 3px; /* Ajouté pour un meilleur espacement */
+    color: white !important;
+}
+
+    
+
 /* Ajustement du contenu principal */
 .content {
     margin-left: 260px; /* Ajusté pour correspondre à la sidebar */
@@ -196,13 +191,13 @@ if (!empty($recette_ids)) {
         <p><?php echo htmlspecialchars($_SESSION['email']); ?></p>
     </div>
 
-    <a href="Accueil.php"><i class="material-icons">home</i> Accueil</a>
+    <a href="Accueil.php" ><i class="material-icons">home</i> Accueil</a>
     <a href="Profil.php"><i class="material-icons">account_circle</i> Profil</a>
     <a href="Favoris.php"><i class="material-icons">favorite</i> Favoris</a>
     <a href="Enregistrement.php"><i class="material-icons">bookmark</i> Enregistrements</a>
     <a href="Publication.php"><i class="material-icons">post_add</i> Publications</a>
     <a href="Brouillons.php"><i class="material-icons">drafts</i> Brouillons</a>
-    <a href="Notifications.php"><i class="material-icons">notifications</i> Notifications</a>
+    <a href="Notification.php"><i class="material-icons">notifications</i> Notifications</a>
     <a href="Deconnexion.php"><i class="material-icons">exit_to_app</i> Déconnexion</a>
 </div>
 

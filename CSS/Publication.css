@@ -1,27 +1,7 @@
 body {
     display: flex;
 }
-.sidebar {
-    width: 250px;
-    background-color: #37474F;
-    color: white;
-    height: 100vh;
-    padding: 12px;
-    position: fixed;
-}
-.sidebar a {
-    color: white;
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    text-decoration: none;
-}
-.sidebar a i {
-    margin-right: 20px;
-}
-.sidebar a:hover {
-    background-color: #455A64;
-}
+
 .content {
     margin-left: 270px;
     padding: 10px;
@@ -65,19 +45,3 @@ white-space: nowrap; /* Empêche le texte de passer à la ligne */
     right: 20px;
    
 }
-.sidebar ul li a {
-    color: white !important;
-    display: flex;
-    align-items: center;
-    padding: 9px 13px;
-    text-decoration: none;
-    transition: 0.3s;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 500;
-  }
-
-        .sidebar ul li a:hover {
-    background-color: #ff5722;
-    transform: translateX(5px);
-  }

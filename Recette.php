@@ -300,7 +300,7 @@ if (isset($_SESSION['user_id'])) {
             <li><a href="brouillons.php"><i class="material-icons">save</i> Brouillons</a></li>
             <li><a href="Publication.php"><i class="material-icons">edit</i> Publication</a></li>
             <li><a href="Deconnexion.php"><i class="material-icons">exit_to_app</i> Déconnexion</a></li>
-            <li><a href="Notifications.php"><i class="material-icons">notifications</i> Notifications</a></li>
+            <li><a href="Notification.php"><i class="material-icons">notifications</i> Notifications</a></li>
             <li><a href="Historique.php"><i class="material-icons">history</i> Historique</a></li>
         </ul>
     </div>

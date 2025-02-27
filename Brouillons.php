@@ -42,7 +42,7 @@ body {
 
 /* 🔹 Sidebar */
 .sidebar {
-    width: 260px;
+    /* width: 260px;
     background-color: #37474F;
     color: white;
     height: 100vh;
@@ -52,7 +52,13 @@ body {
     left: 0;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-between; */
+    width: 250px;
+            height: 100vh;
+            position: fixed;
+            background-color: #343a40;
+            color: white;
+            padding: 20px;
  
 }
 
@@ -66,7 +72,7 @@ body {
     border-radius: 50%;
     width: 100px; /* Augmenté */
     height: 100px;
-    margin-bottom: 10px;
+    margin-bottom: 7px;
 }
 
 .user-info h6 {
@@ -85,20 +91,31 @@ body {
     color: white;
     display: flex;
     align-items: center;
-    padding: 15px;
+    padding: 9px;
     font-size: 16px; /* Augmenté */
     text-decoration: none;
     transition: 0.3s;
 }
 
 .sidebar a i {
-    font-size: 20px; /* Augmenté */
-    margin-right: 10px;
+   /*  font-size: 20px; Augmenté 
+    margin-right: 10px;*/
+    color: white !important;
+    display: flex;
+    align-items: center;
+    padding: 2px 9px;
+    text-decoration: none;
+    transition: 0.3s;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 800;
+    
 }
 
 .sidebar a:hover {
-    background-color: #455A64;
-    border-radius: 5px;
+    background-color: #ff5722;
+    transform: translateX(5px);
+    border-radius: 10px;
 }
 
 /* 🔹 Contenu principal */
@@ -155,22 +172,7 @@ body {
     text-align: center;
 }
 
-.sidebar ul li a {
-    color: white !important;
-    display: flex;
-    align-items: center;
-    padding: 9px 13px;
-    text-decoration: none;
-    transition: 0.3s;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 500;
-  }
 
-        .sidebar ul li a:hover {
-    background-color: #ff5722;
-    transform: translateX(5px);
-  }
 
 </style>
 <body>
@@ -186,7 +188,7 @@ body {
             <h6><?php echo htmlspecialchars($user['nom']) . ' ' . htmlspecialchars($user['prenom']); ?></h6>
             <p><?php echo htmlspecialchars($user['email']); ?></p>
         </div>
-        <a href="Accueil.php"><i class="material-icons">home</i> Accueil</a>
+        <a href="Accueil.php" class="nav-link"><i class="material-icons">home</i> Accueil</a>
         <a href="Profil.php"><i class="material-icons">account_circle</i> Profil</a>
         <a href="Favoris.php"><i class="material-icons">favorite</i> Favoris</a>
         <a href="Enregistrement.php"><i class="material-icons">bookmark</i> Enregistrements</a>

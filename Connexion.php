@@ -1,4 +1,5 @@
 <?php
+session_start(); // Démarrer la session
 include('config.php'); // Connexion à la base de données
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -16,15 +17,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['nom'] = $user['nom'];
         $_SESSION['prenom'] = $user['prenom'];
         $_SESSION['email'] = $user['email'];
+        $_SESSION['role'] = $user['role']; // Stocker le rôle
 
-        // Redirection après connexion réussie
-        header("Location: Accueil.php");
+        // Redirection selon le rôle
+        if ($user['role'] === 'admin') {
+            header("Location: Admin.php"); // Page admin
+        } else {
+            header("Location: Accueil.php"); // Page utilisateur
+        }
         exit;
     } else {
         $error = "Identifiants incorrects.";
     }
 }
 ?>
+
 
 
 <!DOCTYPE html>

@@ -57,6 +57,7 @@ $notif_count = $stmt->fetchColumn();
     transition: 0.3s;
     border-radius: 5px;
     font-size: 16px;
+   
     font-weight: 500;
   }
 
