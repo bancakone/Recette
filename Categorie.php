@@ -92,47 +92,49 @@ $notif_count = $stmt->fetchColumn();
             margin-left: 270px;
         }
 
-        /* .card {
-    border-radius: 12px;
-    overflow: hidden;  Pour éviter que l'image dépasse 
-    text-align: center;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-.card-image img {
-    width: 90%;
-    height: 200px; /* Ajuste selon la taille souhaitée 
-    object-fit: cover;  Évite la déformation 
-}
-.card-content {
-    font-size: 16px;
-    font-weight: bold;
-}
- */
-.container {
-            margin-left: 270px;
+        .card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            /* box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); */
         }
 
-        .card {
-            margin-bottom: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .card-body h5{
-text-align : center;
-        }
         .card img {
+            width: 100%;
             height: 300px;
             object-fit: cover;
-            cursor: pointer;
         }
+
+        .card-body {
+            text-align: center;
+        }
+
+        .card-title {
+    font-family: 'Montserrat', sans-serif; /* Police moderne et lisible */
+    font-size: 1.4rem; /* Taille de police un peu plus grande pour plus d'impact */
+    font-weight: 600; /* Poids de police légèrement plus léger que le "bold" pour une apparence élégante */
+    color: #37474F; /* Couleur sombre pour une bonne lisibilité */
+    text-transform: capitalize; /* Première lettre de chaque mot en majuscule */
+    letter-spacing: 1px; /* Espacement des lettres pour un effet plus aéré */
+    margin-bottom: 10px; /* Espacement sous le titre pour éviter qu'il touche l'image */
+    transition: color 0.3s, transform 0.3s; /* Transition fluide pour les effets de survol */
+}
+
+.card-title:hover {
+    color: #ff5722; /* Couleur du texte au survol */
+    transform: scale(1.05); /* Agrandissement léger du texte au survol */
+}
+
 
         img.rounded-circle {
             height: 80px;
             width: 80px;
             object-fit: cover;
         }
-
         .nav-link {
             color: white;
             display: flex;
@@ -143,13 +145,29 @@ text-align : center;
             margin-right: 10px;
             color: white;
         }
-
         .badge {
             background-color: red;
             position: absolute;
             margin-left: 5px;
             font-size: 12px;
         }
+        h3 {
+    font-size: 2rem; /* Taille de police plus grande */
+    font-weight: bold; /* Police en gras */
+    color: #333; /* Couleur sombre pour une bonne lisibilité */
+    text-align: center; /* Centre le titre */
+    text-transform: uppercase; /* Met le texte en majuscules */
+    margin-bottom: 30px; /* Espacement en bas pour aérer */
+    letter-spacing: 1px; /* Espacement des lettres pour un effet plus moderne */
+    border-bottom: 2px solid #ff5722; /* Ajoute une bordure colorée en bas du titre */
+    padding-bottom: 10px; /* Espacement entre le titre et la bordure */
+    font-family: 'Roboto', sans-serif; /* Police moderne et propre */
+}
+
+h3.mb-4 {
+    margin-bottom: 40px; /* Si vous voulez un espacement supplémentaire en bas */
+}
+
     </style>
 </head>
 <body>
@@ -186,21 +204,17 @@ text-align : center;
         </ul>
     </div>
     <div class="container">
-        <h3>Recettes : <?php echo htmlspecialchars($categorie_nom); ?></h3>
+        <h3 class="mb-4"><?php echo htmlspecialchars($categorie_nom); ?></h3>
         <div class="row">
             <?php if (count($recettes) > 0): ?>
                 <?php foreach ($recettes as $recette): ?>
-                    <div class="col s12 m4">
+                    <div class="col-md-4 mb-4">
                         <div class="card">
-                            <div class="card-image">
                             <a href="Recette.php?id=<?= $recette['id'] ?>">
-                                <img src="<?php echo $recette['photo']; ?>" alt="Image">
-                            </a>    
-                                <span class="card-title"><?php echo htmlspecialchars($recette['titre']); ?></span>
-                            </div>
-                            <!--  -->
-                            <div class="card-action">
-                                <a href="Recette.php?id=<?php echo $recette['id']; ?>">Voir la recette</a>
+                                <img src="<?php echo htmlspecialchars($recette['photo']); ?>" alt="Image">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title"> <?php echo htmlspecialchars($recette['titre']); ?> </h5>
                             </div>
                         </div>
                     </div>

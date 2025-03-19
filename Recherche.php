@@ -10,14 +10,21 @@ require 'config.php'; // Connexion à la base de données
     <title>Recherche de Recettes</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <style>
-        .card {
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            text-align: center;
-            background: white;
-            padding-bottom: 15px;
-        }
+       .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    text-align: center;
+    padding-bottom: 15px;
+}
 
         .card img {
             width: 100%;
@@ -47,36 +54,38 @@ require 'config.php'; // Connexion à la base de données
     </style>
 </head>
 <body>
-
 <div class="container">
-<?php
-require 'config.php'; // Connexion à la base de données
+    <div class="row card-container"> <!-- Conteneur flex pour bien organiser les cartes -->
+        <?php
+        require 'config.php'; // Connexion à la base de données
 
-if (isset($_GET['q']) && !empty($_GET['q'])) {
-    $q = htmlspecialchars($_GET['q']);
+        if (isset($_GET['q']) && !empty($_GET['q'])) {
+            $q = htmlspecialchars($_GET['q']);
 
-    // Requête SQL pour filtrer les recettes publiées par titre ou ingrédients
-    $stmt = $pdo->prepare("SELECT * FROM recettes WHERE statut = 'publie' AND (titre LIKE ? OR ingredients LIKE ?) ORDER BY date_creation DESC LIMIT 5");
-    $stmt->execute(["%$q%", "%$q%"]);
-    $recettes = $stmt->fetchAll();
+            // Requête SQL pour filtrer les recettes publiées par titre ou ingrédients
+            $stmt = $pdo->prepare("SELECT * FROM recettes WHERE statut = 'publie' AND (titre LIKE ? OR ingredients LIKE ?) ORDER BY date_creation DESC LIMIT 5");
+            $stmt->execute(["%$q%", "%$q%"]);
+            $recettes = $stmt->fetchAll();
 
-    if ($recettes) {
-        foreach ($recettes as $recette) {
-            echo "
-                <div class='card'>
-                    <a href='Recette.php?id={$recette['id']}'>
-                        <img src='".htmlspecialchars($recette['photo'])."' alt='".htmlspecialchars($recette['titre'])."'>
-                        <p>".htmlspecialchars($recette['titre'])."</p>
-                    </a>
-                </div>
-            ";
+            if ($recettes) {
+                foreach ($recettes as $recette) {
+                    echo "
+                        <div class='col s12 m6 l3'> <!-- Adaptatif selon la taille de l'écran -->
+                            <div class='card'>
+                                <a href='Recette.php?id={$recette['id']}'>
+                                    <img src='".htmlspecialchars($recette['photo'])."' alt='".htmlspecialchars($recette['titre'])."'>
+                                    <p class='card-title'>".htmlspecialchars($recette['titre'])."</p>
+                                </a>
+                            </div>
+                        </div>
+                    ";
+                }
+            } else {
+                echo "<p>Aucune recette trouvée.</p>";
+            }
         }
-    } else {
-        echo "<p>Aucune recette trouvée.</p>";
-    }
-}
-?>
-
+        ?>
+    </div>
 </div>
 
 </body>

@@ -181,10 +181,10 @@ body {
         <div class="user-info">
             <!-- Afficher la photo de profil -->
             <?php if (isset($_SESSION['photo']) && $_SESSION['photo'] != ''): ?>
-                    <img src="<?php echo $_SESSION['photo']; ?>" alt="Photo de profil" width="80" height="80" />
-                <?php else: ?>
-                    <img src="default-avatar.png" alt="Photo de profil" width="80" height="80" />
-                <?php endif; ?>
+                <img src="<?php echo $_SESSION['photo']; ?>" alt="Photo de profil" width="80" height="80" />
+            <?php else: ?>
+                <img src="default-avatar.png" alt="Photo de profil" width="80" height="80" />
+            <?php endif; ?>
             <h6><?php echo htmlspecialchars($user['nom']) . ' ' . htmlspecialchars($user['prenom']); ?></h6>
             <p><?php echo htmlspecialchars($user['email']); ?></p>
         </div>
@@ -199,15 +199,16 @@ body {
     </div>
 
     <div class="container">
-       
-        
         <div class="row">
             <?php if (count($brouillons) > 0): ?>
                 <?php foreach ($brouillons as $brouillon): ?>
                     <div class="col s12 m6 l4">
                         <div class="card">
-                             <div class="card-image">
-                                <img src="<?php echo !empty($brouillon['photo']) ? 'images/' . htmlspecialchars($brouillon['photo']) : 'images/default.jpg'; ?>" alt="Image de la recette">
+                            <div class="card-image">
+                                <?php 
+                              $image_path = !empty($brouillon['photo']) ? 'brouillon_image/' . htmlspecialchars($brouillon['photo']) : 'uploads/default.jpg';
+                                ?>
+                                <img src="<?php echo $image_path; ?>" alt="Image de la recette">
                             </div>
 
                             <div class="card-content">
@@ -223,7 +224,6 @@ body {
                                 <a href="PublierBrouillon.php?id=<?php echo $brouillon['id']; ?>" class="btn green">
                                     <i class="material-icons">publish</i> 
                                 </a>
-
                             </div>
                         </div>
                     </div>
@@ -232,7 +232,6 @@ body {
                 <p class="center-align">Aucun brouillon trouvé.</p>
             <?php endif; ?>
         </div>
-
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

@@ -2,6 +2,10 @@
 session_start();
 include('config.php'); // Connexion à la base de données
 
+
+$stmt = $pdo->query("SELECT * FROM categories");
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 // Vérifie si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: Connexion.php');
@@ -15,14 +19,70 @@ $stmt_user = $pdo->prepare($sql_user);
 $stmt_user->execute(['id' => $user_id]);
 $user = $stmt_user->fetch();
 
+// Vérifie si l'ID de la recette est passé dans l'URL
 if (isset($_GET['id'])) {
     $recette_id = $_GET['id'];
     $sql = "SELECT * FROM recettes WHERE id = :id AND user_id = :user_id AND statut = 'brouillon'";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['id' => $recette_id, 'user_id' => $_SESSION['user_id']]);
     $recette = $stmt->fetch();
+    
     if (!$recette) {
         echo "Brouillon non trouvé.";
+        exit();
+    }
+    
+    // Définir la catégorie actuelle
+    $categorie_id_actuelle = $recette['categorie_id'];
+
+    // Traitement du formulaire lors de la soumission
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $titre = $_POST['titre'];
+        $duree = $_POST['duree'];
+        $portions = $_POST['portions'];
+        $description = $_POST['description'];
+        $ingredients = $_POST['ingredients'];
+        $methode = $_POST['methodes'];
+        
+        // Gérer l'image téléchargée
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            // Dossier où l'image sera stockée
+            $target_dir = "brouillon_image/";
+            $photo = $target_dir . basename($_FILES['photo']['name']);
+            
+            // Déplace l'image téléchargée vers le dossier
+            if (move_uploaded_file($_FILES['photo']['tmp_name'], $photo)) {
+                echo "L'image a été téléchargée avec succès.";
+            } else {
+                echo "Erreur lors du téléchargement de l'image.";
+            }
+        } else {
+            // Si aucune photo n'est téléchargée, conserver l'ancienne photo
+            $photo = $recette['photo'];
+        }
+        
+        // Mise à jour de la recette
+        $sql_update = "UPDATE recettes SET titre = :titre, duree = :duree, portions = :portions, description = :description, ingredients = :ingredients, methodes = :methodes, photo = :photo WHERE id = :id AND user_id = :user_id";
+        $stmt_update = $pdo->prepare($sql_update);
+        if (!$stmt_update->execute([
+            'titre' => $titre,
+            'duree' => $duree,
+            'portions' => $portions,
+            'description' => $description,
+            'ingredients' => $ingredients,
+            'methodes' => $methode,
+            'photo' => $photo,
+            'id' => $recette_id,
+            'user_id' => $_SESSION['user_id']
+        ])) {
+            // Si une erreur survient, afficher le détail de l'erreur
+            print_r($stmt_update->errorInfo());
+        } else {
+            echo "Recette mise à jour avec succès";
+        }
+        
+        // Redirection après la mise à jour
+        header('Location: Brouillons.php');
         exit();
     }
 }
@@ -37,119 +97,197 @@ if (isset($_GET['id'])) {
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         body {
-            display: flex;
-            background: #f8f9fa;
             font-family: 'Roboto', sans-serif;
-        }
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background: #2c3e50;
-            padding: 20px;
-            color: white;
-        }
-        .sidebar img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: block;
-            margin: 0 auto;
-        }
-        .sidebar h6, .sidebar p {
-            text-align: center;
-        }
-        .sidebar ul {
+            background: #f2f2f2;
+            margin: 0;
             padding: 0;
         }
-        .sidebar ul li {
-            list-style: none;
-            padding: 10px;
-        }
-        .sidebar ul li a {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-        .sidebar ul li a i {
-            margin-right: 10px;
-        }
         .container {
-            flex: 1;
-            max-width: 800px;
-            background: white;
-            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            padding: 30px;
+            height: 100vh;
+        }
+        .left-section {
+            background-color: white;
+            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            margin: 50px auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 48%;
+            overflow-y: auto;
+        }
+        .right-section {
+            width: 48%;
+            background-color: #2c3e50;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+        }
+        .right-section h1 {
+            font-size: 3em;
+            font-weight: bold;
+            text-align: center;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header a {
+            color: #ff5722;
+            font-size: 1.5em;
+            text-decoration: none;
+        }
+        .form-container form {
+            width: 100%;
+        }
+        .input-field {
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #ff5722;
+            width: 100%;
+            border-radius: 50px;
+            padding: 10px;
+            font-size: 18px;
+        }
+        .file-field .btn {
+            background-color: #ff5722;
+        }
+        .file-path-wrapper input {
+            border: 1px solid #ccc;
+        }
+        .file-path-wrapper {
+            margin-top: 10px;
+        }
+        #image-preview {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        #preview-img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .row .input-field {
+            flex: 1;
+            margin-right: 20px;
+        }
+        .row .input-field:last-child {
+            margin-right: 0;
+        }
+        select {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <img src="images/<?= $user['photo'] ?: 'default.png' ?>" alt="Photo de profil">
-        <h6><?= htmlspecialchars($user['nom']) ?></h6>
-        <p><?= htmlspecialchars($user['email']) ?></p>
-        <ul>
-            <li><a href="dashboard.php"><i class="material-icons">home</i> Accueil</a></li>
-            <li><a href="profil.php"><i class="material-icons">person</i> Profil</a></li>
-            <li><a href="favoris.php"><i class="material-icons">favorite</i> Favoris</a></li>
-            <li><a href="enregistrements.php"><i class="material-icons">bookmark</i> Enregistrements</a></li>
-            <li><a href="brouillons.php"><i class="material-icons">drafts</i> Brouillons</a></li>
-            <li><a href="historique.php"><i class="material-icons">history</i> Historique</a></li>
-            <li><a href="notifications.php"><i class="material-icons">notifications</i> Notifications</a></li>
-            <li><a href="deconnexion.php"><i class="material-icons">exit_to_app</i> Déconnexion</a></li>
-        </ul>
-    </div>
+
     <div class="container">
-        <h5>Modifier Recette</h5>
-        <form method="POST" enctype="multipart/form-data">
-            <div class="file-field input-field">
-                <div class="btn red">
-                    <span>PHOTO</span>
-                    <input type="file" name="photo" accept="image/*">
+        <div class="left-section">
+            <div class="form-container">
+                <div class="header">
+                    <a href="Brouillons.php" class="material-icons">close</a>
+                    <span class="title">Modifier Recette</span>
                 </div>
-                <div class="file-path-wrapper">
-                    <input class="file-path validate" type="text" placeholder="Modifier la photo">
-                </div>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="file-field input-field">
+                        <div class="btn red">
+                            <span>PHOTO</span>
+                            <input type="file" name="photo" accept="image/*" >
+                            <img id="preview-img" style="display:none;">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" placeholder="Modifier la photo">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field">
+                            <select name="categorie_id" required>
+                                <option value="" disabled selected>Choisir une catégorie</option>
+                                <?php foreach ($categories as $categorie): ?>
+                                    <option value="<?= $categorie['id'] ?>" <?= ($categorie_id_actuelle == $categorie['id']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($categorie['nom']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <label>Catégorie</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field">
+                            <input type="text" name="titre" value="<?= htmlspecialchars($recette['titre']) ?>" required>
+                            <label>Titre</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="duree" value="<?= htmlspecialchars($recette['duree']) ?>" required>
+                            <label>Durée (ex: 30 min)</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field">
+                            <input type="number" name="portions" value="<?= htmlspecialchars($recette['portions']) ?>" min="1" required>
+                            <label>Portions</label>
+                        </div>
+                        <div class="input-field">
+                            <textarea name="description" class="materialize-textarea" required><?= htmlspecialchars($recette['description']) ?></textarea>
+                            <label>Description</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field">
+                            <textarea name="ingredients" class="materialize-textarea" required><?= htmlspecialchars($recette['ingredients']) ?></textarea>
+                            <label>Ingrédients</label>
+                        </div>
+                        <div class="input-field">
+                            <textarea name="methodes" class="materialize-textarea" required><?= htmlspecialchars($recette['methodes']) ?></textarea>
+                            <label>Méthodes</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn waves-effect waves-light">ENREGISTRER LES MODIFICATIONS</button>
+                </form>
             </div>
-            <div class="row">
-                <div class="input-field col s6">
-                    <input type="text" name="titre" value="<?= htmlspecialchars($recette['titre']) ?>" required>
-                    <label>Titre</label>
-                </div>
-                <div class="input-field col s6">
-                    <input type="text" name="duree" value="<?= htmlspecialchars($recette['duree']) ?>" required>
-                    <label>Durée (ex: 30 min)</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <textarea name="description" class="materialize-textarea" required><?= htmlspecialchars($recette['description']) ?></textarea>
-                    <label>Description</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s6">
-                    <input type="number" name="portions" value="<?= htmlspecialchars($recette['portions']) ?>" min="1" required>
-                    <label>Portions</label>
-                </div>
-                <div class="input-field col s6">
-                    <input type="text" name="ingredients" value="<?= htmlspecialchars($recette['ingredients']) ?>" required>
-                    <label>Ingrédients</label>
-                    <a class="btn-floating btn-small red"><i class="material-icons">add</i></a>
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <textarea name="methode" class="materialize-textarea" required><?= htmlspecialchars($recette['methodes']) ?></textarea>
-                    <label>Méthodes</label>
-                    <a class="btn-floating btn-small red"><i class="material-icons">add</i></a>
-                </div>
-            </div>
-            <button type="submit" class="btn-large waves-effect waves-light">ENREGISTRER LES MODIFICATIONS</button>
-        </form>
+        </div>
+
+        <div class="right-section">
+            <h1>Nom de l'Application</h1>
+        </div>
     </div>
+
+    <script>
+        // function previewImage(event) {
+        //     let reader = new FileReader();
+        //     reader.onload = function() {
+        //         let output = document.getElementById('preview-img');
+        //         output.src = reader.result;
+        //         output.style.display = 'block';
+        //     }
+        //     reader.readAsDataURL(event.target.files[0]);
+        // }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>

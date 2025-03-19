@@ -186,9 +186,7 @@ if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingr
                     <label>Catégorie</label>
                 </div>
 
-                <div id="image-preview" class="center">
-                    <img id="preview-img" src="" alt="Prévisualisation" style="display: none; max-width: 100%;">
-                </div>
+               
 
                 <div class="row">
                     <div class="input-field col s6">

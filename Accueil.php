@@ -209,26 +209,33 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
   }
 
   .card {
-    width: 23%;
+    width: 22%;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s;
-    border-radius: 5px;
+    border-radius: 15px;
     overflow: hidden;
   }
 
   .card img {
     width: 100%;
-    height: 170px;
+    height: 250px;
     object-fit: cover;
   }
 
   .card p {
-    padding: 10px;
-    text-align: center;
-    font-weight: bold;
-    color: #37474F;
-  }
+  padding: 5px;
+  text-align: center;
+  font-weight: bold;
+  color: #37474F;
+  transition: color 0.3s ease-in-out, transform 0.3s ease-in-out; /* Animation fluide */
+}
+
+.card p:hover {
+  color: #ff5722; /* Change la couleur du texte */
+  transform: scale(1.1); /* Agrandit légèrement le texte */
+}
+
 
   .card:hover {
     transform: scale(1.05);
@@ -277,9 +284,34 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
     margin-right: 10px;
   }
 
-  .right-items span {
-    margin-right: 10px;
-  }
+ 
+  .dropdown-trigger {
+  display: flex;
+  align-items: center; /* Aligne verticalement l'icône */
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.dropdown-trigger:hover {
+  background-color: rgba(255, 87, 34, 0.1); /* Fond léger au survol */
+  transform: scale(1.1); /* Agrandit légèrement */
+}
+
+.dropdown-content {
+  display: none; /* Caché par défaut */
+  position: absolute;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  min-width: 150px;
+  z-index: 1000; /* S'assurer qu'il est au-dessus des autres éléments */
+}
+
+
+
   .abonnements-info {
     margin-top: 10px;
     text-align: center;
@@ -312,6 +344,63 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
     outline: none;
     flex: 1;
     font-size: 14px;
+}
+h5 {
+  font-size: 1.5rem; /* Taille du texte */
+  font-weight: bold; /* Texte en gras */
+  color: #333; /* Couleur du texte */
+  text-transform: uppercase; /* Mettre en majuscules */
+  border-left: 4px solid #ff5722; /* Bordure gauche pour l'accent */
+  padding-left: 10px; /* Espacement du texte par rapport à la bordure */
+  margin-bottom: 15px; /* Espacement avec les éléments en dessous */
+  font-family: 'Arial', sans-serif; /* Police de caractères */
+}
+h5:hover {
+  color: #ff5722; /* Change la couleur du texte */
+  border-left-color: #333; /* Change la couleur de la bordure */
+  transform: translateX(5px); /* Déplace légèrement le titre vers la droite */
+}
+.right-items {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espacement entre les éléments */
+}
+
+.right-items span {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #37474F;
+  transition: color 0.3s ease-in-out;
+}
+
+.right-items a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 5px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.right-items a i {
+  font-size: 24px;
+  color: #37474F;
+  transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Effet hover */
+.right-items span:hover {
+  color: #ff5722; /* Change la couleur du texte */
+}
+
+.right-items a:hover {
+  background-color: rgba(255, 87, 34, 0.1); /* Léger fond coloré */
+  transform: scale(1.1); /* Agrandit légèrement l'élément */
+}
+
+.right-items a:hover i {
+  color: #ff5722; /* Change la couleur de l'icône */
+  transform: rotate(10deg); /* Fait pivoter légèrement l'icône */
 }
 
 
@@ -379,10 +468,10 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
                 <img src="Image/vue1.jpg" alt="Image 2">
             </div>
             <div class="carousel-item" href="#three!">
-                <img src="https://via.placeholder.com/800x400" alt="Image 3">
+                <img src="Image/I2.jpg" alt="Image 3">
             </div>
             <div class="carousel-item" href="#four!">
-                <img src="https://via.placeholder.com/800x400" alt="Image 4">
+                <img src="Image/I3.jpg" alt="Image 4">
             </div>
         </div>
 
@@ -404,13 +493,13 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
     <a class="dropdown-trigger" href="#" data-target="dropdown-categories">
         <i class="material-icons">menu</i>
     </a>
-</div>
+
 <ul id="dropdown-categories" class="dropdown-content">
     <?php foreach ($categories as $categorie): ?>
         <li><a href="Categorie.php?nom=<?= urlencode($categorie['nom']) ?>"><?= htmlspecialchars($categorie['nom']) ?></a></li>
     <?php endforeach; ?>
 </ul>
-
+</div>
 
         </div>
 
@@ -479,40 +568,20 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
     </a>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var elems = document.querySelectorAll('.carousel');
-            var instances = M.Carousel.init(elems, {
-                fullWidth: true,
-                indicators: true
-            });
-        });
-        document.addEventListener("DOMContentLoaded", function() {
-    let searchInput = document.getElementById("search");
-    let resultatsDiv = document.getElementById("resultats");
-    let recettesDiv = document.querySelector(".grid");
-
-    searchInput.addEventListener("keyup", function() {
-        let query = this.value.trim();
-
-        if (query.length > 2) { // Activer la recherche après 3 caractères
-            fetch("Recherche.php?q=" + query)
-                .then(response => response.text())
-                .then(data => {
-                    if (data.trim() === "") {
-                        resultatsDiv.innerHTML = "<p>Aucune recette trouvée.</p>";
-                        recettesDiv.style.display = "none"; // Cacher toutes les recettes
-                    } else {
-                        resultatsDiv.innerHTML = data;
-                        recettesDiv.style.display = "none"; // Cacher la liste originale
-                    }
-                });
-        } else {
-            resultatsDiv.innerHTML = ""; // Effacer les résultats
-            recettesDiv.style.display = "flex"; // Réafficher la liste originale
-        }
+     document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.carousel');
+    var instances = M.Carousel.init(elems, {
+      fullWidth: true,   // Mode plein écran
+      indicators: true,  // Affichage des indicateurs
+      duration: 200,     // Durée de transition entre les images (en ms)
     });
-});
 
+    // Défilement automatique toutes les 3 secondes
+    setInterval(() => {
+      var activeCarousel = M.Carousel.getInstance(document.querySelector('.carousel'));
+      activeCarousel.next();
+    }, 2000); // Changer toutes les 3 secondes
+  });
 
     document.addEventListener('DOMContentLoaded', function() {
         var elems = document.querySelectorAll('.dropdown-trigger');

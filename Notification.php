@@ -135,23 +135,21 @@ $notif_count = $stmt->fetchColumn();
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        .collection-item {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 16px;
-        }
+       /* Style des notifications */
+.collection-item {
+    font-size: 16px; /* Taille de texte principale */
+    font-weight: 400; /* Police normale pour le texte des notifications */
+}
 
-        .collection-item small {
-            color: #777;
-            font-size: 12px;
-        }
-        .collection-item:hover {
-    background-color: #ffe0b2 !important;
-    transform: translateX(5px);
-    transition: 0.3s;
+.collection-item strong {
+    font-size: 16px; /* Mettre le texte principal en taille plus grande */
+    font-weight: 700; /* Mettre le message en gras */
+    color: #333; /* Couleur du texte */
+}
+
+.collection-item small {
+    color: #777; /* Couleur grise pour les dates */
+    font-size: 13px; /* Taille plus petite pour les dates */
 }
 
     </style>
@@ -192,7 +190,7 @@ $notif_count = $stmt->fetchColumn();
     </div>
 
     <div class="container">
-    <h4>Notifications</h4>
+    <h4 style= "text-align: center;">Notifications</h4>
     <ul class="collection">
         <?php foreach ($notifications as $notif): ?>
             <li class="collection-item" 

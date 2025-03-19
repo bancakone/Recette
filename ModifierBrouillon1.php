@@ -2,80 +2,80 @@
 session_start();
 include('config.php'); // Connexion à la base de données
 
-$stmt = $pdo->query("SELECT * FROM categories");
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Vérifie si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: Connexion.php');
     exit();
 }
 
+// Récupérer les informations de l'utilisateur
+$user_id = $_SESSION['user_id'];
+$sql_user = "SELECT nom, email, photo FROM users WHERE id = :id";
+$stmt_user = $pdo->prepare($sql_user);
+$stmt_user->execute(['id' => $user_id]);
+$user = $stmt_user->fetch();
 
+// Vérifie si l'ID de la recette est passé dans l'URL
 if (isset($_GET['id'])) {
     $recette_id = $_GET['id'];
-
-    // Récupérer les informations de la recette
-    $sql = "SELECT * FROM recettes WHERE id = :id AND user_id = :user_id";
+    $sql = "SELECT * FROM recettes WHERE id = :id AND user_id = :user_id AND statut = 'brouillon'";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['id' => $recette_id, 'user_id' => $_SESSION['user_id']]);
     $recette = $stmt->fetch();
-
+    
     if (!$recette) {
-        echo "Recette non trouvée.";
+        echo "Brouillon non trouvé.";
         exit();
     }
-// Définir la catégorie actuelle
-$categorie_id_actuelle = $recette['categorie_id'];
 
-    // Traitement de la modification
+    // Traitement du formulaire lors de la soumission
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $titre = $_POST['titre'];
-        $description = $_POST['description'];
-        $portions = $_POST['portions'];
         $duree = $_POST['duree'];
+        $portions = $_POST['portions'];
+        $description = $_POST['description'];
+        $ingredients = $_POST['ingredients'];
+        $methode = $_POST['methodes'];
         
-        // Convertir les tableaux en chaînes
-        $ingredients = implode(", ", $_POST['ingredients']);
-        $methode = implode("\n", $_POST['methodes']);
-        
-        // Gestion de l'image
-        $image = $recette['photo']; // Image par défaut (ancienne image)
+        // Gérer l'image téléchargée
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-            $imageTmpPath = $_FILES['photo']['tmp_name'];
-            $imageName = $_FILES['photo']['name'];
-            $imageExtension = pathinfo($imageName, PATHINFO_EXTENSION);
-            $validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-
-            if (in_array(strtolower($imageExtension), $validExtensions)) {
-                $newImageName = uniqid('recette_', true) . '.' . $imageExtension;
-                $imagePath = 'images/' . $newImageName;
-                move_uploaded_file($imageTmpPath, $imagePath);
-                $image = $imagePath;
+            // Dossier où l'image sera stockée
+            $target_dir = "brouillon_image/";
+            $photo = $target_dir . basename($_FILES['photo']['name']);
+            
+            // Déplace l'image téléchargée vers le dossier
+            if (move_uploaded_file($_FILES['photo']['tmp_name'], $photo)) {
+                echo "L'image a été téléchargée avec succès.";
             } else {
-                echo "Extension d'image invalide. Utilisez jpg, jpeg, png, ou gif.";
-                exit();
+                echo "Erreur lors du téléchargement de l'image.";
             }
+        } else {
+            // Si aucune photo n'est téléchargée, conserver l'ancienne photo
+            $photo = $recette['photo'];
         }
-
-        $sql = "UPDATE recettes 
-        SET titre = :titre, description = :description, portions = :portions, duree = :duree, 
-            ingredients = :ingredients, methodes = :methodes, photo = :photo, categorie_id = :categorie_id 
-        WHERE id = :id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-    'titre' => $titre, 
-    'description' => $description, 
-    'portions' => $portions, 
-    'duree' => $duree, 
-    'ingredients' => $ingredients,
-    'methodes' => $methode,
-    'photo' => $image,
-    'categorie_id' => $_POST['categorie_id'],  // Nouvelle catégorie
-    'id' => $recette_id
-]);
-
-
-        header('Location: Publication.php');
+        
+        // Mise à jour de la recette
+        $sql_update = "UPDATE recettes SET titre = :titre, duree = :duree, portions = :portions, description = :description, ingredients = :ingredients, methodes = :methodes, photo = :photo WHERE id = :id AND user_id = :user_id";
+        $stmt_update = $pdo->prepare($sql_update);
+        if (!$stmt_update->execute([
+            'titre' => $titre,
+            'duree' => $duree,
+            'portions' => $portions,
+            'description' => $description,
+            'ingredients' => $ingredients,
+            'methodes' => $methode,
+            'photo' => $photo,
+            'id' => $recette_id,
+            'user_id' => $_SESSION['user_id']
+        ])) {
+            // Si une erreur survient, afficher le détail de l'erreur
+            print_r($stmt_update->errorInfo());
+        } else {
+            echo "Recette mise à jour avec succès";
+        }
+        
+        // Redirection après la mise à jour
+        header('Location: Brouillons.php');
         exit();
     }
 }
@@ -203,7 +203,10 @@ $categorie_id_actuelle = $recette['categorie_id'];
     </div>
 </div>
 
-             
+                <!-- <div id="image-preview" class="center">
+                    <img id="preview-img" src="<?php echo htmlspecialchars($recette['photo']); ?>" alt="Prévisualisation" style="max-width:10%;">
+                </div> -->
+
                 <div class="row">
                     <div class="input-field col s6">
                         <input type="text" id="titre" name="titre" value="<?php echo htmlspecialchars($recette['titre']); ?>" required>

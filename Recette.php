@@ -87,7 +87,11 @@ if (isset($_SESSION['user_id'])) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body { display: flex; background: #f8f9fa; font-family: 'Roboto', sans-serif; }
+        body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
         .sidebar { width: 280px; background: #2c3e50; padding: 20px; color: white; height: 100vh; position: fixed; text-align: center; }
         .sidebar img { width: 100px; height: 80px; border-radius: 10%; border: 3px solid orange; margin-left : 2px; }
         .sidebar h6, .sidebar p { margin: 2px 0; }
@@ -96,11 +100,48 @@ if (isset($_SESSION['user_id'])) {
         .sidebar ul li a { color: white; text-decoration: none; display: flex; align-items: center; gap: 10px; }
         .content { margin-left: 300px; flex: 1; padding: 20px; }
         .recette-header { display: flex; align-items: flex-start; gap: 20px; }
-        .recette-img { width: 50%; border-radius: 10px; }
+        .recette-img {
+    width: 100%;
+    max-width: 500px; /* Largeur maximale pour éviter les images trop grandes */
+    height: 400px; /* Hauteur fixe pour garder l'uniformité */
+    object-fit: cover; /* Coupe l'image pour qu'elle remplisse l'espace sans déformation */
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto; /* Centre l'image */
+}
+
         .recette-info { width: 50%; }
-        .recette-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .recette-actions { display: flex; gap: 15px; }
-        .stars { display: flex; gap: 5px; cursor: pointer; margin-bottom: 20px; }
+        .recette-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.actions-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+.stars {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+.recette-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.like-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
         .stars i { color: #ccc; }
         .stars i.active { color: gold; }
         .comment-section { margin-top: 20px; }
@@ -149,44 +190,7 @@ if (isset($_SESSION['user_id'])) {
     background-color: #ff5722;
     transform: translateX(5px);
   }
- /* 🟠 Style du bouton "Commenter" */
-.comment-section form button {
-    background-color: #ff5722;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    margin-top: 10px;
-}
-
-.comment-section form button:hover {
-    background-color: #e64a19;
-}
-
-/* 🟠 Style du champ de texte */
-.comment-section textarea {
-    width: 100%;
-    height: 100px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    resize: none;
-    font-size: 14px;
-    margin-top: 10px;
-}
-
-/* 🟠 Style de la section des commentaires */
-.comments-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 20px;
-}
-
-/* 🟠 Style de chaque commentaire */
+ /* ✅ Amélioration des commentaires */
 .comment-item {
     background: white;
     border: 1px solid #ddd;
@@ -196,26 +200,21 @@ if (isset($_SESSION['user_id'])) {
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* 🟠 Style du nom de l'auteur */
 .comment-item strong {
     font-size: 16px;
     color: #2c3e50;
 }
 
-/* 🟠 Style du texte du commentaire */
 .comment-item p {
-    font-size: 14px;
+    font-size: 15px;
     color: #555;
-    margin-top: 5px;
 }
 
-/* 🟠 Style de la date du commentaire */
 .comment-item small {
     font-size: 12px;
     color: #888;
 }
 
-/* 🟠 Style des boutons Modifier/Supprimer */
 .comment-item a {
     font-size: 12px;
     color: #ff5722;
@@ -229,22 +228,20 @@ if (isset($_SESSION['user_id'])) {
     text-decoration: underline;
 }
 
-/* 🟠 Style du bouton "Voir tous les commentaires" */
+/* ✅ Amélioration du bouton Voir plus */
 .view-more a {
     display: inline-block;
-    background-color: #007BFF;
     color: white;
-    padding: 1px 5px;
+    padding: 8px 12px;
     font-size: 14px;
     border-radius: 5px;
     text-decoration: none;
     transition: 0.3s;
-    margin-top: 10px;
 }
 
-.view-more a:hover {
-    background-color: #0056b3;
-}
+
+
+/* ✅ Meilleure mise en page des recettes */
 .more-recipes {
     display: flex;
     gap: 15px;
@@ -262,7 +259,7 @@ if (isset($_SESSION['user_id'])) {
 
 .recipe-card img {
     width: 100%;
-    height: 150px;
+    height: 250px;
     object-fit: cover;
     border-radius: 8px;
 }
@@ -273,11 +270,175 @@ if (isset($_SESSION['user_id'])) {
     color: #333;
 }
 
-.recipe-card a {
-    text-decoration: none;
-    color: inherit;
+/* ✅ Amélioration des étoiles */
+.stars i.active {
+    color: gold;
+    font-size: 22px;
 }
 
+/* ✅ Ajout de transition aux icônes */
+.favorite-icon, .save-icon, .star-icon, .like-btn {
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.favorite-icon.active {
+    color: red;
+    font-size: 22px;
+}
+
+.save-icon.active {
+    color: blue;
+    font-size: 22px;
+}
+
+.like-btn {
+    font-size: 22px;
+    color: #007BFF;
+}
+
+.like-btn.blue-text {
+    color: #0056b3;
+}
+
+/* ✅ Amélioration de l'affichage des détails */
+.details-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.details-container div {
+    width: 48%;
+}
+
+.details-container h5 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+h4{
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+/* ✅ Titres principaux */
+h1, h2, h3, h5 {
+    font-size: 1.5rem; /* Taille du texte */
+  font-weight: bold; /* Texte en gras */
+  color: #333; /* Couleur du texte */
+  text-transform: uppercase; /* Mettre en majuscules */
+  border-left: 4px solid #ff5722; /* Bordure gauche pour l'accent */
+  padding-left: 10px; /* Espacement du texte par rapport à la bordure */
+  margin-bottom: 15px; /* Espacement avec les éléments en dessous */
+  font-family: 'Arial', sans-serif; /* Police de caractères */
+}
+h1, h2, h3, h4, h5:hover {
+  color: #ff5722; /* Change la couleur du texte */
+  border-left-color: #333; /* Change la couleur de la bordure */
+  transform: translateX(5px); /* Déplace légèrement le titre vers la droite */
+}
+/* ✅ Sous-titres et détails */
+h6, .small-text {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    color: white;
+}
+
+/* ✅ Texte des paragraphes */
+p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #444;
+}
+
+/* ✅ Style des liens */
+a {
+    text-decoration: none;
+    color: #007BFF;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* ✅ Titres des sections */
+.section h5 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ff5722;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+/* ✅ Amélioration des tableaux */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+th {
+    background: #2c3e50;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background: #f1f1f1;
+}
+
+/* ✅ Amélioration des boutons */
+button, .btn {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+button:hover, .btn:hover {
+    opacity: 0.8;
+}
+
+/* ✅ Amélioration des formulaires */
+form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+textarea {
+    resize: none;
+    height: 80px;
+}
 
     </style>
 </head>
@@ -285,7 +446,7 @@ if (isset($_SESSION['user_id'])) {
     <div class="sidebar">
         <?php if (isset($_SESSION['nom']) && isset($_SESSION['prenom']) && isset($_SESSION['email'])): ?>
             <img src="<?= isset($_SESSION['photo']) && $_SESSION['photo'] != '' ? htmlspecialchars($_SESSION['photo']) : 'default-avatar.png' ?>" alt="Photo de profil">
-            <h6><?= htmlspecialchars($_SESSION['nom']) . ' ' . htmlspecialchars($_SESSION['prenom']) ?></h6>
+            <p><?= htmlspecialchars($_SESSION['nom']) . ' ' . htmlspecialchars($_SESSION['prenom']) ?></p>
             <p><?= htmlspecialchars($_SESSION['email']) ?></p>
         <?php else: ?>
             <img src="default-avatar.png" alt="Photo de profil">
@@ -306,73 +467,65 @@ if (isset($_SESSION['user_id'])) {
     </div>
     <div class="content">
         <div class="recette-header">
-            <img src="<?= htmlspecialchars($recette['photo']) ?>" class="recette-img" alt="Recette">
+        <img src="<?= htmlspecialchars($recette['photo']) ?>" class="recette-img" alt="Image de la recette">
+        
             <div class="recette-info">
-                <div class="recette-title">
-                    <h4><?= htmlspecialchars($recette['titre']) ?></h4>
-                    <div class="recette-actions">
-             
-    
-                    <i class="material-icons favorite-icon <?= $estFavori ? 'active' : '' ?>" 
-                    data-id="<?= $recette_id ?>">favorite</i>
-                    <i class="material-icons save-icon <?= $estEnregistre ? 'active' : '' ?>" 
-                    data-id="<?= $recette_id ?>">bookmark</i>
-                        <i class="material-icons">cloud_download</i>
-                    </div>
-                </div>
-                <div class="stars">
-    <?php for ($i = 1; $i <= 5; $i++): ?>
-        <i class="material-icons star-icon <?= ($i <= $user_note) ? 'active' : '' ?>" data-note="<?= $i ?>">star</i>
-    <?php endfor; ?>
-    <span id="moyenne-note">(<?= $moyenne ?>)</span>
-    <i class="material-icons like-btn <?= $liked ? 'blue-text' : '' ?>" data-id="<?= $recette_id ?>">
-        thumb_up
-    </i>
-    <span id="like-count"><?= $total_likes ?></span>
+            <div class="recette-title">
+    <h4><?= htmlspecialchars($recette['titre']) ?></h4>
 </div>
+
+<!-- Conteneur des étoiles et actions sur la même ligne -->
+<div class="actions-container">
+    <!-- Étoiles -->
+    <div class="stars">
+        <?php for ($i = 1; $i <= 5; $i++): ?>
+            <i class="material-icons star-icon <?= ($i <= $user_note) ? 'active' : '' ?>" data-note="<?= $i ?>">star</i>
+        <?php endfor; ?>
+        <span id="moyenne-note">(<?= $moyenne ?>)</span>
+    </div>
+    
+    <!-- Bouton J'aime avec le compteur -->
+    <div class="like-container">
+        <i class="material-icons like-btn <?= $liked ? 'blue-text' : '' ?>" data-id="<?= $recette_id ?>">thumb_up</i>
+        <span id="like-count"><?= $total_likes ?></span>
+    </div>
+    <!-- Actions : Favoris, Enregistrement, J'aime, Téléchargement -->
+    <div class="recette-actions">
+        <i class="material-icons favorite-icon <?= $estFavori ? 'active' : '' ?>" data-id="<?= $recette_id ?>">favorite</i>
+        <i class="material-icons save-icon <?= $estEnregistre ? 'active' : '' ?>" data-id="<?= $recette_id ?>">bookmark</i>
+        
+
+        <i class="material-icons">cloud_download</i>
+    </div>
+</div>
+
+
+                
                 <p><?= nl2br(htmlspecialchars($recette['description'])) ?></p>
+
+                
                 <div class="comment-section">
-    <h5>Commentaires</h5>
+                <div class="comment-section">
+    <h4>Commentaires</h5>
 
     <!-- Formulaire d'ajout de commentaire -->
     <?php if (isset($_SESSION['user_id'])): ?>
-        <form action="AjoutCommentaire.php" method="POST">
+        <form action="AjoutCommentaire.php" method="POST" class="comment-form">
             <input type="hidden" name="recette_id" value="<?= $recette_id ?>">
-            <textarea name="contenu" class="materialize-textarea" placeholder="Écrivez un commentaire..." required></textarea>
-            <button type="submit" class="btn orange">Commenter</button>
+            <div class="comment-box">
+                <textarea name="contenu" class="materialize-textarea" placeholder="Écrivez un commentaire..." required></textarea>
+                <button type="submit" class="send-btn">
+                    <img src="send-icon.png" alt="Envoyer">
+                </button>
+            </div>
         </form>
     <?php else: ?>
         <p><a href="Connexion.php">Connectez-vous</a> pour commenter.</p>
     <?php endif; ?>
 
-    <!-- Affichage d'un seul commentaire -->
-    <?php
-    $sql = "SELECT c.id, c.contenu, c.date_creation, u.nom, u.prenom, c.user_id 
-            FROM commentaires c 
-            JOIN users u ON c.user_id = u.id 
-            WHERE c.recette_id = :recette_id 
-            ORDER BY c.date_creation DESC 
-            LIMIT 1";  // Affiche seulement le dernier commentaire
+   
+</div>
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['recette_id' => $recette_id]);
-    $commentaire = $stmt->fetch();
-    ?>
-
-    <?php if ($commentaire): ?>
-        <div class="comment">
-            <p><strong><?= htmlspecialchars($commentaire['nom'] . " " . $commentaire['prenom']) ?></strong> - 
-               <?= date('d/m/Y H:i', strtotime($commentaire['date_creation'])) ?></p>
-            <p><?= nl2br(htmlspecialchars($commentaire['contenu'])) ?></p>
-
-            <?php if ($_SESSION['user_id'] == $commentaire['user_id']): ?>
-                <a href="ModifierCommentaire.php?id=<?= $commentaire['id'] ?>">Modifier</a> | 
-                <a href="SupprimerCommentaire.php?id=<?= $commentaire['id'] ?>" onclick="return confirm('Supprimer ce commentaire ?')">Supprimer</a>
-            <?php endif; ?>
-        </div>
-    <?php else: ?>
-        <p>Aucun commentaire pour cette recette.</p>
-    <?php endif; ?>
 
     <!-- Bouton pour voir tous les commentaires -->
     <div class="view-more">
@@ -392,7 +545,7 @@ if (isset($_SESSION['user_id'])) {
                 <p><?= nl2br(htmlspecialchars($recette['methodes'])) ?></p>
             </div>
         </div>
-        <h5 style="text-align:center;">Plus de recettes</h5>
+        <h4 style="text-align:center;">Plus de recettes</h5>
   <div class="more-recipes">
     <?php
    $sql = "SELECT id, titre, photo FROM recettes WHERE user_id = :user_id AND id != :recette_id ORDER BY RAND() LIMIT 3";
@@ -416,7 +569,7 @@ if (isset($_SESSION['user_id'])) {
 </div>
 <div class="view-more">
     <a href="Publication1.php?user_id=<?= $recette['user_id'] ?>">
-        <i class="material-icons" style="background-color: white; color : blue">arrow_forward</i>
+        <i class="material-icons" style =" color: #ff5722; margin-left: 420px;">arrow_forward</i>
     </a>
 </div>
 

@@ -32,50 +32,8 @@ $recettes = $stmt->fetchAll();
     <title>Mes Publications</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="CSS/Publication.css">
-    <style>
-        .sidebar {
-    width: 250px;
-        height: 100vh;
-        position: fixed;
-        background-color: #343a40;
-        color: white;
-        padding: 15px;
-}
+    <link rel="stylesheet" href="CSS/Publication1.css">
 
-/* Liens de la sidebar */
-.sidebar a {
-    color: white;
-    display: flex;
-    align-items: center;
-    padding: 12px 15px; /* Ajusté */
-    font-size: 16px; /* Augmenté */
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-
-.sidebar a:hover {
-    background-color: #ff5722;
-    transform: translateX(5px);
-    border-radius: 10px;
-}
-.sidebar a i {
-   /*  font-size: 20px; Augmenté 
-    margin-right: 10px;*/
-    color: white !important;
-    display: flex;
-    align-items: center;
-    padding: 2px 10px;
-    text-decoration: none;
-    transition: 0.3s;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 800;
-    
-}
-
-    </style>
 </head>
 <body>
 
@@ -130,10 +88,10 @@ $recettes = $stmt->fetchAll();
             <?php endif; ?>
         </div>
 
-        <!-- Bouton d'ajout flottant -->
+        <!-- Bouton d'ajout flottant
         <a href="AjouterRecette.php" class="btn-floating btn-large red waves-effect waves-light">
             <i class="material-icons">add</i>
-        </a>
+        </a> -->
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

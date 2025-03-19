@@ -63,49 +63,102 @@ $notif_count = $stmt->fetchColumn();
         .sidebar ul li a:hover {
     background-color: #ff5722;
     transform: translateX(5px);
-  }
-        .container {
-            margin-left: 270px;
-        }
+  }/* Contenu principal */
+.container {
+    margin-left: 270px;
+    font-family: 'Arial', sans-serif;
+}
 
-        .card {
-            margin-bottom: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
+h3 {
+    font-size: 2rem; /* Taille de police plus grande */
+    font-weight: bold; /* Police en gras */
+    color: #333; /* Couleur sombre pour une bonne lisibilité */
+    text-align: center; /* Centre le titre */
+    text-transform: uppercase; /* Met le texte en majuscules */
+    margin-bottom: 30px; /* Espacement en bas pour aérer */
+    letter-spacing: 1px; /* Espacement des lettres pour un effet plus moderne */
+    border-bottom: 2px solid #ff5722; /* Ajoute une bordure colorée en bas du titre */
+    padding-bottom: 10px; /* Espacement entre le titre et la bordure */
+    font-family: 'Roboto', sans-serif; /* Police moderne et propre */
+}
 
-        .card img {
-            height: 300px;
-            object-fit: cover;
-            cursor: pointer;
-        }
-        .card-body h5{
-        text-align : center;
-        }
-        img.rounded-circle {
-            height: 80px;
-            width: 80px;
-            object-fit: cover;
-        }
+h3.mb-4 {
+    margin-bottom: 40px; /* Si vous voulez un espacement supplémentaire en bas */
+}
+/* Cartes */
+.card {
+    width: 85%;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    transition: transform 0.3s ease; /* Ajout d'un effet au survol */
+   
+}
 
-        .nav-link {
-            color : white;
-            display: flex;
-            align-items: center;
-        }
+.card:hover {
+    transform: scale(1.05); /* Effet de zoom sur la carte */
+}
 
-        .nav-link i {
-            margin-right: 10px;
-            color : white;
-        }
+.card img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    cursor: pointer;
+}
 
-        .badge {
-            background-color: red;
-            position: absolute;
-            margin-left: 5px;
-            font-size: 12px;
-        }
+.card-body {
+    text-align: center;
+    padding: 10px; /* Espacement ajouté pour aérer le contenu */
+}
+
+.card-body p {
+    font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+}
+
+
+
+/* Image de profil */
+img.rounded-circle {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+}
+
+/* Liens de navigation */
+.nav-link {
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-weight: 500;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: #ff5722; /* Changer la couleur au survol */
+    border-radius: 5px;
+}
+
+.nav-link i {
+    margin-right: 10px;
+    color: white;
+}
+
+/* Badge notifications */
+.badge {
+    background-color: red;
+    position: absolute;
+    margin-left: 5px;
+    font-size: 12px;
+    padding: 2px 6px; /* Taille ajustée pour plus de visibilité */
+    border-radius: 12px; /* Badge arrondi */
+}
+
     </style>
 </head>
 <body>
@@ -117,14 +170,13 @@ $notif_count = $stmt->fetchColumn();
             <!-- Image de profil dynamique -->
             <img src="<?= htmlspecialchars($user['photo'] ?? 'default.png') ?>" 
                  alt="Avatar" class="rounded-circle">
-            <h6><?= htmlspecialchars($user['nom'] . " " . $user['prenom']) ?></h6>
+            <p></p><?= htmlspecialchars($user['nom'] . " " . $user['prenom']) ?></p>
             <p><?= htmlspecialchars($user['email']) ?></p>
         </div>
 
         <ul class="nav flex-column">
             <li class="nav-item"><a href="Accueil.php" class="nav-link"><i class="material-icons">home</i> Accueil</a></li>
             <li class="nav-item"><a href="Profil.php" class="nav-link"><i class="material-icons">person</i> Profil</a></li>
-            <li class="nav-item"><a href="Favoris.php" class="nav-link"><i class="material-icons">favorite</i> Favoris</a></li>
             <li class="nav-item"><a href="Enregistrement.php" class="nav-link"><i class="material-icons">bookmark</i> Enregistrements</a></li>
 
             <?php if (isset($_SESSION['user_id'])): ?>
@@ -157,7 +209,7 @@ $notif_count = $stmt->fetchColumn();
                                 <img src="<?= htmlspecialchars($recette['photo']) ?>" class="card-img-top" alt="Recette">
                             </a>
                             <div class="card-body">
-                                <h5 class="card-title"><?= htmlspecialchars($recette['titre']) ?></h5>
+                                <p ><?= htmlspecialchars($recette['titre']) ?></p>
                             </div>
                         </div>
                     </div>
