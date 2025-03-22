@@ -8,8 +8,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
-// $user_id = $_GET['user_id'];
+// $user_id = $_SESSION['user_id'];
+$user_id = $_GET['user_id'];
 
 // Récupérer les infos utilisateur
 $sql_user = "SELECT nom, prenom, email , photo FROM users WHERE id = :user_id";
@@ -29,6 +29,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute(['user_id' => $_SESSION['user_id']]);
 $notif_count = $stmt->fetchColumn();
 
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -39,8 +40,8 @@ $notif_count = $stmt->fetchColumn();
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="CSS/Publication1.css">
-<style>
-    /* Palette de couleurs modernes */
+    <style>
+        /* Palette de couleurs modernes */
     :root {
             --primary-color: #FF6F61;
             --secondary-color: #2E3B4E;
@@ -133,12 +134,12 @@ $notif_count = $stmt->fetchColumn();
             margin-right: auto;
         }
 
-</style>
+    </style>
 </head>
 <body>
 
-   <!-- Barre latérale -->
-   <div class="sidebar">
+ <!-- Barre latérale -->
+ <div class="sidebar">
         <div class="text-center">
             <!-- Image de profil dynamique -->
             <img src="<?= htmlspecialchars($user['photo'] ?? 'default.png') ?>" alt="Avatar" class="rounded-circle">
@@ -170,7 +171,6 @@ $notif_count = $stmt->fetchColumn();
     </div>
     <!-- Contenu principal -->
     <div class="content">
-    <h3>Mes Publications</h3>
         <div class="row">
             <?php if (!empty($recettes)): ?>
                 <?php foreach ($recettes as $recette): ?>
@@ -201,10 +201,7 @@ $notif_count = $stmt->fetchColumn();
             <?php endif; ?>
         </div>
 
-        <!-- Bouton d'ajout flottant
-        <a href="AjouterRecette.php" class="btn-floating btn-large red waves-effect waves-light">
-            <i class="material-icons">add</i>
-        </a> -->
+      
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

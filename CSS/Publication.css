@@ -1,0 +1,155 @@
+
+.content {
+    margin-left: 270px;
+    padding: 10px;
+    width: 100%;
+    background-color: rgb(255, 255, 255);
+}
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: auto; /* Ajuste automatiquement la hauteur */
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.card-image img {
+    width: 100%;
+    height: 290px;
+    object-fit: cover;
+}
+
+.card-content {
+    flex-grow: 1;
+    text-align: center;
+    padding: 5px; /* Réduit l'espacement interne */
+    max-width: 80%; /* Réduit la largeur du contenu à 80% */
+    margin: 0 auto; /* Centre le contenu à l'intérieur de la carte */
+}
+
+
+.card-action {
+display: flex;
+justify-content: center; /* Centre les boutons */
+gap: 50px; /* Espace entre les boutons */
+padding: 6px;
+}
+
+.card-action .btn {
+flex: 4; /* Permet aux boutons de prendre la même taille */
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 5px;
+text-align: center;
+white-space: nowrap; /* Empêche le texte de passer à la ligne */
+}
+
+.btn-floating {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+   
+}
+  /* Style des paragraphes */
+  p {
+           font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+      
+  /* Palette de couleurs modernes */
+  :root {
+    --primary-color: #FF6F61;
+    --secondary-color: #2E3B4E;
+    --accent-color: #4CAF50;
+    --text-color: #333;
+    --background-color: #F5F5F5;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 25px 20px;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar .text-center {
+    margin-bottom: 30px;
+}
+
+.sidebar .text-center img {
+    width: 100px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-left: 50px;
+}
+
+.sidebar .text-center p {
+    margin : 1px 0 0 45px;
+    font-weight: 100;
+    font-size: 15px;
+    color:#bbb ;
+}
+
+.sidebar ul li a {
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    text-decoration: none;
+    transition: 0.3s;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.sidebar ul li a:hover {
+    background-color: var(--primary-color);
+    transform: translateX(8px);
+}
+
+.sidebar ul li a .material-icons {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.sidebar ul li a .badge {
+    background-color: var(--accent-color);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-left: 10px;
+}
+h3 {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: var(--text-color);
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    font-family: 'Montserrat', sans-serif;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+h3::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 4px;
+    background-color: var(--primary-color);
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}

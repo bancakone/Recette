@@ -1,30 +1,30 @@
-<?php
-session_start();
-include('config.php');
+<?php 
+session_start(); 
+include('config.php');  
 
-if (!isset($_SESSION['user_id'])) {
-    die("Vous devez être connecté pour voir vos enregistrements.");
-}
+if (!isset($_SESSION['user_id'])) { 
+    die("Vous devez être connecté pour voir vos enregistrements."); 
+} 
 
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'];  
 
 // Récupérer les informations de l'utilisateur
-$sql_user = "SELECT nom, prenom, email, photo FROM users WHERE id = :user_id";
-$stmt_user = $pdo->prepare($sql_user);
-$stmt_user->execute(['user_id' => $user_id]);
-$user = $stmt_user->fetch();
+$sql_user = "SELECT nom, prenom, email, photo FROM users WHERE id = :user_id"; 
+$stmt_user = $pdo->prepare($sql_user); 
+$stmt_user->execute(['user_id' => $user_id]); 
+$user = $stmt_user->fetch();  
 
-$sql = "SELECT r.* FROM recettes r JOIN enregistrements e ON r.id = e.recette_id WHERE e.user_id = :user_id";
-$stmt = $pdo->prepare($sql);
-$stmt->execute(['user_id' => $user_id]);
-$enregistrements = $stmt->fetchAll();
+$sql = "SELECT r.* FROM recettes r JOIN enregistrements e ON r.id = e.recette_id WHERE e.user_id = :user_id"; 
+$stmt = $pdo->prepare($sql); 
+$stmt->execute(['user_id' => $user_id]); 
+$enregistrements = $stmt->fetchAll();  
 
 // Notifications
-$sql = "SELECT COUNT(*) FROM notifications WHERE user_id = :user_id AND lu = FALSE";
-$stmt = $pdo->prepare($sql);
-$stmt->execute(['user_id' => $_SESSION['user_id']]);
-$notif_count = $stmt->fetchColumn();
-?>
+$sql = "SELECT COUNT(*) FROM notifications WHERE user_id = :user_id AND lu = FALSE"; 
+$stmt = $pdo->prepare($sql); 
+$stmt->execute(['user_id' => $_SESSION['user_id']]); 
+$notif_count = $stmt->fetchColumn(); 
+?> 
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -35,172 +35,235 @@ $notif_count = $stmt->fetchColumn();
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
-          .sidebar {
-            width: 250px;
+        /* Palette de couleurs modernes */
+        :root {
+            --primary-color: #FF6F61;
+            --secondary-color: #2E3B4E;
+            --accent-color: #4CAF50;
+            --text-color: #333;
+            --background-color: #F5F5F5;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
             height: 100vh;
             position: fixed;
-            background-color: #343a40;
+            background-color: var(--secondary-color);
             color: white;
-            padding: 20px;
+            padding: 25px 20px;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar .text-center {
+            margin-bottom: 30px;
+        }
+
+        .sidebar .text-center img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar .text-center p {
+            margin: 5px 0;
+            font-weight: 500;
+            color: #bbb;
         }
 
         .sidebar ul li a {
-    color: white !important;
-    display: flex;
-    align-items: center;
-    padding: 9px 13px;
-    text-decoration: none;
-    transition: 0.3s;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 500;
-  }
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            text-decoration: none;
+            transition: 0.3s;
+            border-radius: 8px;
+            font-size: 16px;
+        }
 
         .sidebar ul li a:hover {
-    background-color: #ff5722;
-    transform: translateX(5px);
-  }
-        .nav-link i {
-    margin-right: 15px; /* Augmente l'espace entre l'icône et le texte */
-    font-size: 22px; /* Facultatif : ajuster la taille de l'icône */
-}
+            background-color: var(--primary-color);
+            transform: translateX(8px);
+        }
 
-        /* Mise en page des cartes */
+        .sidebar ul li a .material-icons {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .sidebar ul li a .badge {
+            background-color: var(--accent-color);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        /* Contenu principal */
         .container {
-    margin-left: 250px; /* Décalage pour ne pas recouvrir la sidebar */
-    width: calc(100% - 250px); /* Ajustement pour exclure la sidebar */
-    padding: 20px;
-}
+            margin-left: 270px;
+            width: calc(100% - 270px);
+            padding: 30px;
+            background-color: var(--background-color);
+            min-height: 100vh;
+        }
 
+        h3 {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-align: center;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h3::after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: var(--primary-color);
+            margin-top: 10px;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
         .cards-container {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center; /* Centrer les cartes */
-            gap: 20px;
+            justify-content: center;
+            gap: 25px;
         }
 
         .card {
-            width: 200px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-            border-radius: 10px;
+            width: 250px;
+            background-color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
             overflow: hidden;
             font-family: 'Poppins', sans-serif;
             text-align: center;
-            margin-left:  10px;        }
+            margin-bottom: 30px;
+        }
 
         .card:hover {
-            transform: scale(1.05);
+            transform: translateY(-8px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
         }
 
         .card img {
             width: 100%;
-            height: 280px;
+            height: 200px;
             object-fit: cover;
             cursor: pointer;
+            border-bottom: 2px solid var(--secondary-color);
         }
 
         .card-body {
-            padding: 15px;
+            padding: 20px;
         }
 
         .card-body h5 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
-            margin: 10px 0;
+            color: var(--text-color);
+            margin-top: 15px;
+            margin-bottom: 10px;
         }
 
-        img.rounded-circle {
-            height: 80px;
-            width: 80px;
-            object-fit: cover;
+        .card-body p {
+            font-size: 14px;
+            color: #777;
+            margin-top: 10px;
         }
 
-        h3 {
-    font-size: 2rem; /* Taille de police plus grande */
-    font-weight: bold; /* Police en gras */
-    color: #333; /* Couleur sombre pour une bonne lisibilité */
-    text-align: center; /* Centre le texte */
-    text-transform: uppercase; /* Met le texte en majuscules */
-    margin-bottom: 30px; /* Espacement en bas pour aérer */
-    letter-spacing: 1px; /* Espacement des lettres pour un effet plus moderne */
-    font-family: 'Roboto', sans-serif; /* Police moderne et propre */
-    position: relative; /* Position relative pour la ligne */
-    padding-bottom: 15px; /* Espacement entre le titre et la ligne */
-}
+        /* Mise en forme des messages d'alerte */
+        p.text-center {
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: 600;
+            margin-top: 40px;
+            font-family: 'Poppins', sans-serif;
+        }
 
-h3::after {
-    content: ""; 
-    display: block;
-    width: 100%; /* Prend toute la largeur du conteneur parent */
-    height: 3px;
-    background-color: #ff5722;
-    margin-top: 5px; /* Ajoute un petit espace si nécessaire */
-}
+        /* Effet sur les boutons */
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-
-
+        button:hover {
+            background-color: var(--accent-color);
+        }
     </style>
 </head>
 <body>
+    <div class="d-flex">
+        <!-- Barre latérale -->
+        <div class="sidebar">
+            <div class="text-center">
+                <img src="<?= htmlspecialchars($user['photo'] ?? 'default.png') ?>" alt="Avatar" class="rounded-circle">
+                <p><?= htmlspecialchars($user['nom'] . " " . $user['prenom']) ?></p>
+                <p><?= htmlspecialchars($user['email']) ?></p>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a href="Accueil.php" class="nav-link"><i class="material-icons">home</i> Accueil</a></li>
+                <li class="nav-item"><a href="Profil.php" class="nav-link"><i class="material-icons">person</i> Profil</a></li>
+                <li class="nav-item"><a href="Favoris.php" class="nav-link"><i class="material-icons">favorite</i> Favoris</a></li>
 
-<div class="d-flex">
-    <!-- Barre latérale -->
-    <div class="sidebar">
-        <div class="text-center">
-            <img src="<?= htmlspecialchars($user['photo'] ?? 'default.png') ?>" 
-                 alt="Avatar" class="rounded-circle">
-            <p><?= htmlspecialchars($user['nom'] . " " . $user['prenom']) ?></p>
-            <p><?= htmlspecialchars($user['email']) ?></p>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <li class="nav-item"><a href="Brouillons.php" class="nav-link"><i class="material-icons">save</i> Brouillons</a></li>
+                    <li class="nav-item"><a href="Publication.php" class="nav-link"><i class="material-icons">post_add</i> Publication</a></li>
+                    <li class="nav-item"><a href="Historique.php" class="nav-link"><i class="material-icons">history</i> Historique</a></li>
+                <?php endif; ?>
+
+                <li class="nav-item">
+                    <a href="Notification.php" class="nav-link">
+                        <i class="material-icons">notifications</i> Notifications
+                        <?php if ($notif_count > 0): ?>
+                            <span class="badge"><?= $notif_count; ?></span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <li class="nav-item"><a href="Deconnexion.php" class="nav-link"><i class="material-icons">exit_to_app</i> Déconnexion</a></li>
+            </ul>
         </div>
 
-        <ul class="nav flex-column">
-            <li class="nav-item"><a href="Accueil.php" class="nav-link"><i class="material-icons">home</i> Accueil</a></li>
-            <li class="nav-item"><a href="Profil.php" class="nav-link"><i class="material-icons">person</i> Profil</a></li>
-            <li class="nav-item"><a href="Favoris.php" class="nav-link"><i class="material-icons">favorite</i> Favoris</a></li>
-           
-            <?php if (isset($_SESSION['user_id'])): ?>
-                <li class="nav-item"><a href="Brouillons.php" class="nav-link"><i class="material-icons">save</i> Brouillons</a></li>
-                <li class="nav-item"><a href="Publication.php" class="nav-link"><i class="material-icons">post_add</i> Publication</a></li>
-                <li class="nav-item"><a href="Historique.php" class="nav-link"><i class="material-icons">history</i> Historique</a></li>
-            <?php endif; ?>
-
-            <li class="nav-item">
-                <a href="Notification.php" class="nav-link">
-                    <i class="material-icons">notifications</i> Notifications
-                    <?php if ($notif_count > 0): ?>
-                        <span class="badge"><?= $notif_count; ?></span>
-                    <?php endif; ?>
-                </a>
-            </li>
-            <li class="nav-item"><a href="Deconnexion.php" class="nav-link"><i class="material-icons">exit_to_app</i> Déconnexion</a></li>
-        </ul>
-    </div>
-
-    <!-- Contenu principal -->
-    <div class="container mt-4">
-        <h3>Enregistrement</h3> <!-- Le titre est bien placé au-dessus des cartes -->
-        
-        <div class="cards-container">
-            <?php if (count($enregistrements) > 0): ?>
-                <?php foreach ($enregistrements as $recette): ?>
-                    <div class="card">
-                        <a href="Recette.php?id=<?= $recette['id'] ?>">
-                            <img src="<?= htmlspecialchars($recette['photo']) ?>" class="card-img-top" alt="Recette">
-                        </a>
-                        <div class="card-body">
-                            <h5><?= htmlspecialchars($recette['titre']) ?></h5>
+        <!-- Contenu principal -->
+        <div class="container mt-4">
+            <h3>Enregistrement</h3> <!-- Le titre est bien placé au-dessus des cartes -->
+            <div class="cards-container">
+                <?php if (count($enregistrements) > 0): ?>
+                    <?php foreach ($enregistrements as $recette): ?>
+                        <div class="card">
+                            <a href="Recette.php?id=<?= $recette['id'] ?>">
+                                <img src="<?= htmlspecialchars($recette['photo']) ?>" class="card-img-top" alt="Recette">
+                            </a>
+                            <div class="card-body">
+                                <h5><?= htmlspecialchars($recette['titre']) ?></h5>
+                            </div>
                         </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p style="text-align: center;">Vous n'avez pas encore d'enregistrements.</p>
-            <?php endif; ?>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p style="text-align: center;">Vous n'avez pas encore d'enregistrements.</p>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
-</div>
-
 </body>
 </html>

@@ -20,13 +20,11 @@ $stmt_favoris = $pdo->prepare($sql_favoris);
 $stmt_favoris->execute(['user_id' => $user_id]);
 $favoris = $stmt_favoris->fetchAll();
 
-
 // Notifications
 $sql = "SELECT COUNT(*) FROM notifications WHERE user_id = :user_id AND lu = FALSE";
 $stmt = $pdo->prepare($sql);
 $stmt->execute(['user_id' => $_SESSION['user_id']]);
 $notif_count = $stmt->fetchColumn();
-
 ?>
 
 <!DOCTYPE html>
@@ -39,126 +37,165 @@ $notif_count = $stmt->fetchColumn();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="styles.css">
     <style>
+        /* Palette de couleurs modernes */
+        :root {
+            --primary-color: #FF6F61;
+            --secondary-color: #2E3B4E;
+            --accent-color: #4CAF50;
+            --text-color: #333;
+            --background-color: #F5F5F5;
+        }
+
+        /* Sidebar */
         .sidebar {
-            width: 250px;
+            width: 260px;
             height: 100vh;
             position: fixed;
-            background-color: #343a40;
+            background-color: var(--secondary-color);
             color: white;
-            padding: 20px;
+            padding: 25px 20px;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar .text-center {
+            margin-bottom: 30px;
+        }
+
+        .sidebar .text-center img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar .text-center p {
+            margin: 5px 0;
+            font-weight: 500;
+            color: #bbb;
         }
 
         .sidebar ul li a {
-    color: white !important;
-    display: flex;
-    align-items: center;
-    padding: 9px 13px;
-    text-decoration: none;
-    transition: 0.3s;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 500;
-  }
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            text-decoration: none;
+            transition: 0.3s;
+            border-radius: 8px;
+            font-size: 16px;
+        }
 
         .sidebar ul li a:hover {
-    background-color: #ff5722;
-    transform: translateX(5px);
-  }/* Contenu principal */
-.container {
-    margin-left: 270px;
-    font-family: 'Arial', sans-serif;
-}
+            background-color: var(--primary-color);
+            transform: translateX(8px);
+        }
 
-h3 {
-    font-size: 2rem; /* Taille de police plus grande */
-    font-weight: bold; /* Police en gras */
-    color: #333; /* Couleur sombre pour une bonne lisibilité */
-    text-align: center; /* Centre le titre */
-    text-transform: uppercase; /* Met le texte en majuscules */
-    margin-bottom: 30px; /* Espacement en bas pour aérer */
-    letter-spacing: 1px; /* Espacement des lettres pour un effet plus moderne */
-    border-bottom: 2px solid #ff5722; /* Ajoute une bordure colorée en bas du titre */
-    padding-bottom: 10px; /* Espacement entre le titre et la bordure */
-    font-family: 'Roboto', sans-serif; /* Police moderne et propre */
-}
+        .sidebar ul li a .material-icons {
+            margin-right: 10px;
+            font-size: 20px;
+        }
 
-h3.mb-4 {
-    margin-bottom: 40px; /* Si vous voulez un espacement supplémentaire en bas */
-}
-/* Cartes */
-.card {
-    width: 85%;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-    transition: transform 0.3s ease; /* Ajout d'un effet au survol */
-   
-}
+        .sidebar ul li a .badge {
+            background-color: var(--accent-color);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
 
-.card:hover {
-    transform: scale(1.05); /* Effet de zoom sur la carte */
-}
+        /* Contenu principal */
+        .container {
+            margin-left: 270px;
+            width: calc(100% - 270px);
+            padding: 30px;
+            background-color: var(--background-color);
+            min-height: 100vh;
+        }
 
-.card img {
-    width: 100%;
-    height: 280px;
-    object-fit: cover;
-    cursor: pointer;
-}
-
-.card-body {
-    text-align: center;
-    padding: 10px; /* Espacement ajouté pour aérer le contenu */
-}
-
-.card-body p {
-    font-size: 20px;
+        h3 {
+            font-size: 2.2rem;
             font-weight: bold;
-            margin: 10px 0;
-}
+            color: var(--text-color);
+            text-align: center;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            padding-bottom: 15px;
+        }
 
+        h3::after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: var(--primary-color);
+            margin-top: 10px;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+        }
 
-/* Image de profil */
-img.rounded-circle {
-    height: 80px;
-    width: 80px;
-    object-fit: cover;
-}
+        .card {
+            width: 250px;
+            background-color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-/* Liens de navigation */
-.nav-link {
-    color: white;
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    font-weight: 500;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
 
-.nav-link:hover {
-    background-color: #ff5722; /* Changer la couleur au survol */
-    border-radius: 5px;
-}
+        .card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            cursor: pointer;
+            border-bottom: 2px solid var(--secondary-color);
+        }
 
-.nav-link i {
-    margin-right: 10px;
-    color: white;
-}
+        .card-body {
+            padding: 20px;
+        }
 
-/* Badge notifications */
-.badge {
-    background-color: red;
-    position: absolute;
-    margin-left: 5px;
-    font-size: 12px;
-    padding: 2px 6px; /* Taille ajustée pour plus de visibilité */
-    border-radius: 12px; /* Badge arrondi */
-}
+        .card-body h5 {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
 
+        .card-body p {
+            font-size: 14px;
+            color: #777;
+            margin-top: 10px;
+        }
+
+        .badge {
+            background-color: var(--accent-color);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
     </style>
 </head>
 <body>
@@ -168,9 +205,8 @@ img.rounded-circle {
     <div class="sidebar">
         <div class="text-center">
             <!-- Image de profil dynamique -->
-            <img src="<?= htmlspecialchars($user['photo'] ?? 'default.png') ?>" 
-                 alt="Avatar" class="rounded-circle">
-            <p></p><?= htmlspecialchars($user['nom'] . " " . $user['prenom']) ?></p>
+            <img src="<?= htmlspecialchars($user['photo'] ?? 'default.png') ?>" alt="Avatar" class="rounded-circle">
+            <p><?= htmlspecialchars($user['nom'] . " " . $user['prenom']) ?></p>
             <p><?= htmlspecialchars($user['email']) ?></p>
         </div>
 
@@ -199,7 +235,7 @@ img.rounded-circle {
 
     <!-- Contenu principal -->
     <div class="container mt-4">
-        <h3 style= "text-align:center;"> Favoris</h3>
+        <h3>Mes Favoris</h3>
         <div class="row">
             <?php if (count($favoris) > 0): ?>
                 <?php foreach ($favoris as $recette): ?>
@@ -209,7 +245,7 @@ img.rounded-circle {
                                 <img src="<?= htmlspecialchars($recette['photo']) ?>" class="card-img-top" alt="Recette">
                             </a>
                             <div class="card-body">
-                                <p ><?= htmlspecialchars($recette['titre']) ?></p>
+                                <p><?= htmlspecialchars($recette['titre']) ?></p>
                             </div>
                         </div>
                     </div>

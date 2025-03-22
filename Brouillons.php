@@ -21,6 +21,12 @@ $sql = "SELECT id, titre, photo FROM recettes WHERE statut = 'brouillon' AND use
 $stmt = $pdo->prepare($sql);
 $stmt->execute([':user_id' => $_SESSION['user_id']]);
 $brouillons = $stmt->fetchAll();
+
+// Notifications
+$sql = "SELECT COUNT(*) FROM notifications WHERE user_id = :user_id AND lu = FALSE";
+$stmt = $pdo->prepare($sql);
+$stmt->execute(['user_id' => $_SESSION['user_id']]);
+$notif_count = $stmt->fetchColumn();
 ?>
 
 <!DOCTYPE html>
@@ -40,83 +46,77 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* 🔹 Sidebar */
-.sidebar {
-    /* width: 260px;
-    background-color: #37474F;
-    color: white;
-    height: 100vh;
-    padding: 20px 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; */
-    width: 250px;
-            height: 100vh;
-            position: fixed;
-            background-color: #343a40;
-            color: white;
-            padding: 20px;
- 
-}
+ /* Palette de couleurs modernes */
+ :root {
+        --primary-color: #FF6F61;
+        --secondary-color: #2E3B4E;
+        --accent-color: #4CAF50;
+        --text-color: #333;
+        --background-color: #F5F5F5;
+    }
 
-/* 🔹 Profil utilisateur */
-.user-info {
-    text-align: center;
-    padding: 10px;
-}
+    /* Sidebar */
+    .sidebar {
+        width: 260px;
+        height: 100vh;
+        position: fixed;
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 25px 20px;
+        font-family: 'Poppins', sans-serif;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-.user-info img {
-    border-radius: 50%;
-    width: 100px; /* Augmenté */
-    height: 100px;
-    margin-bottom: 7px;
-}
+    .sidebar .text-center {
+        margin-bottom: 30px;
+    }
 
-.user-info h6 {
-    font-size: 18px; /* Augmenté */
-    font-weight: bold;
-    margin: 5px 0;
-}
+    .sidebar .text-center img {
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        margin-left: 50px;
+    }
 
-.user-info p {
-    font-size: 16px; /* Augmenté */
-    margin: 0;
-}
+    .sidebar .text-center p {
+            margin : 1px 0 0 45px;
+            font-weight: 100;
+            font-size: 15px;
+            color:#bbb ;
+        }
 
-/* 🔹 Liens de navigation */
-.sidebar a {
-    color: white;
-    display: flex;
-    align-items: center;
-    padding: 9px;
-    font-size: 16px; /* Augmenté */
-    text-decoration: none;
-    transition: 0.3s;
-}
+    .sidebar ul li a {
+        color: white;
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        text-decoration: none;
+        transition: 0.3s;
+        border-radius: 8px;
+        font-size: 16px;
+    }
 
-.sidebar a i {
-   /*  font-size: 20px; Augmenté 
-    margin-right: 10px;*/
-    color: white !important;
-    display: flex;
-    align-items: center;
-    padding: 2px 9px;
-    text-decoration: none;
-    transition: 0.3s;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 800;
-    
-}
+    .sidebar ul li a:hover {
+        background-color: var(--primary-color);
+        transform: translateX(8px);
+    }
 
-.sidebar a:hover {
-    background-color: #ff5722;
-    transform: translateX(5px);
-    border-radius: 10px;
-}
+    .sidebar ul li a .material-icons {
+        margin-right: 10px;
+        font-size: 20px;
+    }
+
+    .sidebar ul li a .badge {
+        background-color: var(--accent-color);
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        margin-left: 10px;
+    }
+
 
 /* 🔹 Contenu principal */
 .container {
@@ -125,80 +125,149 @@ body {
     width: calc(100% - 270px);
 }
 
+h3 {
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: var(--text-color);
+        text-align: center;
+        text-transform: uppercase;
+        margin-bottom: 30px;
+        font-family: 'Montserrat', sans-serif;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+    h3::after {
+        content: "";
+        display: block;
+        width: 60px;
+        height: 4px;
+        background-color: var(--primary-color);
+        margin-top: 10px;
+        margin-left: auto;
+        margin-right: auto;
+    }
 /* 🔹 Cartes de recettes */
 .card {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border-radius: 10px;
+    border-radius: 15px; /* Rounded corners for a modern look */
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Softer, more prominent shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
 }
 
 .card:hover {
-    /* transform: scale(1.03); */
-    transform: translateX(5px);
+    transform: translateY(-8px); /* Slightly raise the card on hover */
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15); /* More pronounced shadow on hover */
 }
 
 /* 🔹 Image des recettes */
 .card-image img {
     width: 100%;
-    height: 300px; /* Ajusté */
+    height: 300px; 
     object-fit: cover;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    border-top-left-radius: 15px; /* Rounded top corners for the image */
+    border-top-right-radius: 15px;
+    transition: transform 0.3s ease; /* Smooth zoom-in effect */
+}
+
+.card-image img:hover {
+    transform: scale(1.05); /* Slight zoom effect on hover */
 }
 
 /* 🔹 Titre */
 .card-content {
     text-align: center;
     font-weight: bold;
-    padding: 10px;
-    font-size: 1.2em;
+    padding: 5px;
+    font-size: 1.3em; /* Larger font size for the title */
+    color: var(--text-color);
+    background-color: var(--background-color);
 }
 
 /* 🔹 Boutons */
 .card-action {
     display: flex;
-    justify-content: center;
-    gap: 10px;
-    padding: 10px;
+    justify-content: space-between;
+    padding: 1px 2px;
+    background-color: var(--background-color); /* Light background for the action area */
+    border-bottom-left-radius: 5px; /* Rounded bottom corners for the card */
+    border-bottom-right-radius: 15px;
 }
 
+/* 🔹 Bouton de l'action */
 .card-action .btn {
     flex: 1;
-    border-radius: 5px;
+    padding: 2px;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    color: white;
     text-align: center;
+    font-size: 1em;
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
+.card-action .btn:hover {
+    background-color: var(--accent-color); /* Change color on hover */
+}
 
+/* 🔹 Badge des cartes */
+.badge {
+    background-color: var(--accent-color);
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 10px;
+    color: white;
+}
+
+/* 🔹 Mise en forme des messages d'alerte */
+p.text-center {
+    font-size: 1.2rem;
+    color: #666;
+    font-weight: 600;
+    margin-top: 40px;
+    font-family: 'Poppins', sans-serif;
+}
 
 </style>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="user-info">
-            <!-- Afficher la photo de profil -->
-            <?php if (isset($_SESSION['photo']) && $_SESSION['photo'] != ''): ?>
-                <img src="<?php echo $_SESSION['photo']; ?>" alt="Photo de profil" width="80" height="80" />
-            <?php else: ?>
-                <img src="default-avatar.png" alt="Photo de profil" width="80" height="80" />
-            <?php endif; ?>
-            <h6><?php echo htmlspecialchars($user['nom']) . ' ' . htmlspecialchars($user['prenom']); ?></h6>
-            <p><?php echo htmlspecialchars($user['email']); ?></p>
-        </div>
-        <a href="Accueil.php" class="nav-link"><i class="material-icons">home</i> Accueil</a>
-        <a href="Profil.php"><i class="material-icons">account_circle</i> Profil</a>
-        <a href="Favoris.php"><i class="material-icons">favorite</i> Favoris</a>
-        <a href="Enregistrement.php"><i class="material-icons">bookmark</i> Enregistrements</a>
-        <a href="Publication.php"><i class="material-icons">post_add</i> Publications</a>
-        <a href="Deconnexion.php"><i class="material-icons">exit_to_app</i> Déconnexion</a>
-        <a href="Historique.php"><i class="material-icons">history</i> Historique</a>
-        <a href="Notifications"><i class="material-icons">notifications</i> Notifications</a>
+   <!-- Sidebar -->
+<div class="sidebar">
+    <div class="text-center">
+        <img src="<?= htmlspecialchars($user['photo'] ?? 'default.png') ?>" alt="Avatar" class="rounded-circle">
+        <p><?= htmlspecialchars($user['nom'] . " " . $user['prenom']) ?></p>
+        <p><?= htmlspecialchars($user['email']) ?></p>
     </div>
 
+    <ul class="nav flex-column">
+        <li class="nav-item"><a href="Accueil.php" class="nav-link"><i class="material-icons">home</i> Accueil</a></li>
+        <li class="nav-item"><a href="Profil.php" class="nav-link"><i class="material-icons">person</i> Profil</a></li>
+        <li class="nav-item"><a href="Favoris.php" class="nav-link"><i class="material-icons">favorite</i> Favoris</a></li>
+        <li class="nav-item"><a href="Enregistrement.php" class="nav-link"><i class="material-icons">bookmark</i> Enregistrements</a></li>
+
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <li class="nav-item"><a href="Brouillons.php" class="nav-link"><i class="material-icons">save</i> Brouillons</a></li>
+            <li class="nav-item"><a href="Publication.php" class="nav-link"><i class="material-icons">post_add</i> Publication</a></li>
+        <?php endif; ?>
+
+        <li class="nav-item">
+            <a href="Notification.php" class="nav-link">
+                <i class="material-icons">notifications</i> Notifications
+                <?php if ($notif_count > 0): ?>
+                    <span class="badge"><?= $notif_count; ?></span>
+                <?php endif; ?>
+            </a>
+        </li>
+        <li class="nav-item"><a href="Deconnexion.php" class="nav-link"><i class="material-icons">exit_to_app</i> Déconnexion</a></li>
+    </ul>
+</div>
+
     <div class="container">
+    <h3>    Brouillons</h3>
         <div class="row">
             <?php if (count($brouillons) > 0): ?>
                 <?php foreach ($brouillons as $brouillon): ?>

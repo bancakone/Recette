@@ -60,13 +60,24 @@ $historique = $stmt_historique->fetchAll();
 $historique_recettes = [];
 foreach ($historique as $item) {
     $id_recette = $item['recette_id'];
+
+    // Vérifier que l'ID est bien un entier valide
+    if (!is_numeric($id_recette) || $id_recette <= 0) {
+        continue; // Passer à l'élément suivant si l'ID est invalide
+    }
+
     $sql_recette = "SELECT * FROM recettes WHERE id = :id";
     $stmt_recette = $pdo->prepare($sql_recette);
     $stmt_recette->bindParam(':id', $id_recette, PDO::PARAM_INT);
     $stmt_recette->execute();
     $recette_details = $stmt_recette->fetch();
-    $historique_recettes[] = $recette_details;
+
+    // Ajouter uniquement si la recette existe
+    if ($recette_details) {
+        $historique_recettes[] = $recette_details;
+    }
 }
+
 
 // Supposons que l'utilisateur est déjà authentifié et que $_SESSION['user_id'] est disponible
 $stmt = $pdo->prepare("SELECT photo FROM users WHERE id = :user_id");

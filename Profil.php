@@ -69,128 +69,177 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier le Profil</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes blinkText {
-            50% { opacity: 0; }
-        }
-        @keyframes slideBackground {
-            0% { background-position: -100% 0; }
-            100% { background-position: 100% 0; }
-        }
-        @keyframes gradientText {
-            0% { background-position: -100% 0; }
-            100% { background-position: 100% 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background-color: #fff8e1;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
         }
+
         .container {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 80vw;
+            max-width: 900px;
+            height: 80vh;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
+
+        /* Section Image */
         .image-section {
-            width: 50%;
-            position: relative;
             background: url('uploads/istockphoto-1327954795-612x612.jpg') no-repeat center center/cover;
-            filter: brightness(50%);
-            animation: slideBackground 8s infinite linear;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 30px;
+            color: white;
+            position: relative;
         }
-        .image-overlay {
+
+        .image-section::before {
+            content: "";
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            text-align: center;
+            width: 100%;
+            height: 100%;
+           
+            z-index: 1;
         }
+
+        .image-section h1,
+        .image-section p {
+            position: relative;
+            z-index: 2;
+        }
+
+        .image-section h1 {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .image-section p {
+            font-size: 1rem;
+            font-weight: 300;
+            margin-top: 10px;
+        }
+
+        /* Section Formulaire */
         .form-section {
-            width: 50%;
-            padding: 50px;
-            text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            background-color: #ffcc80;
+            padding: 40px;
+            text-align: center;
+            background: rgba(243, 236, 236, 0.5);
         }
-        .animated-title {
-            font-size: 2em;
-            font-weight: bold;
-            color: #d84315;
-            animation: fadeIn 2s ease-out, blinkText 1s infinite;
-            background: linear-gradient(90deg, #ff5722, #e64a19);
-            background-size: 200% 100%;
-            color: transparent;
-            -webkit-background-clip: text;
-            animation: gradientText 4s ease-in-out infinite;
-        }
+
         h2 {
-            color: #d84315;
-            animation: fadeIn 2s ease-out;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 20px;
         }
+
         .input-group {
-            margin: 15px 0;
+            width: 100%;
+            margin-bottom: 15px;
             text-align: left;
         }
+
         label {
-            display: block;
-            font-weight: bold;
+            font-weight: 400;
+            color: #555;
             margin-bottom: 5px;
+            display: block;
         }
-        input[type="text"], input[type="email"], input[type="file"] {
+
+        input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #d84315;
+            border: 2px solid #ddd;
             border-radius: 5px;
-            background-color: #fff3e0;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
         }
+
+        input:focus {
+            border-color: #ff758c;
+            box-shadow: 0px 0px 5px rgba(255, 117, 140, 0.5);
+        }
+
         .btn {
-            background: #ff5722;
+            background: linear-gradient(135deg, #ff758c, #ff7eb3);
             color: white;
+            font-size: 1rem;
             border: none;
-            padding: 10px;
+            padding: 9px;
             width: 100%;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            transition: 0.3s;
+            font-weight: 600;
             margin-top: 10px;
         }
+
         .btn:hover {
-            background: #e64a19;
+            background: linear-gradient(135deg, #ff5c7a, #ff709b);
         }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .image-section {
+                display: none;
+            }
+            .form-section {
+                width: 100%;
+                padding: 30px;
+            }
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+       
     </style>
 </head>
 <body>
     <div class="container">
+        
+        <!-- Section Image -->
         <div class="image-section">
-            <div class="image-overlay">
-                <h1 class="animated-title">Bienvenue sur CookPad !</h1>
-                <p class="animated-title">“La cuisine, c'est le partage et l'amour des bons plats.”</p>
-            </div>
+           <img src="Image/profil.png" alt="" srcset="">
         </div>
+
+        <!-- Section Formulaire -->
         <div class="form-section">
-            <div class="animated-title">CookPad</div>
             <h2>Modifier votre Profil</h2>
-            <form action="Profil.php" method="POST" enctype="multipart/form-data">
+            <a href="Accueil.php" class="close-btn">&times;</a>
+         <form action="Profil.php" method="POST" enctype="multipart/form-data">
                 <div class="input-group">
                     <label for="nom">Nom</label>
                     <input type="text" id="nom" name="nom" value="<?php echo htmlspecialchars($user['nom']); ?>" required>

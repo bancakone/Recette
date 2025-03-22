@@ -93,8 +93,17 @@ if (isset($_SESSION['user_id'])) {
     color: #333;
 }
         .sidebar { width: 280px; background: #2c3e50; padding: 20px; color: white; height: 100vh; position: fixed; text-align: center; }
-        .sidebar img { width: 100px; height: 80px; border-radius: 10%; border: 3px solid orange; margin-left : 2px; }
-        .sidebar h6, .sidebar p { margin: 2px 0; }
+        .sidebar img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+         }
+        .sidebar h6, .sidebar p { margin: 5px 0;
+            font-weight: 500;
+            color: #bbb; }
         .sidebar ul { padding: 0; }
         .sidebar ul li { list-style: none; margin: 15px 0; }
         .sidebar ul li a { color: white; text-decoration: none; display: flex; align-items: center; gap: 10px; }
@@ -175,15 +184,14 @@ if (isset($_SESSION['user_id'])) {
 }
 
 .sidebar ul li a {
-    color: white !important;
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    text-decoration: none;
-    transition: 0.3s;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 500;
+    color: white;
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            text-decoration: none;
+            transition: 0.3s;
+            border-radius: 8px;
+            font-size: 16px;
   }
 
         .sidebar ul li a:hover {
@@ -195,8 +203,8 @@ if (isset($_SESSION['user_id'])) {
     background: white;
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
+    padding: 10px;
+    margin-bottom: 5px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -232,11 +240,12 @@ if (isset($_SESSION['user_id'])) {
 .view-more a {
     display: inline-block;
     color: white;
-    padding: 8px 12px;
+    padding: 5px 10px;
     font-size: 14px;
     border-radius: 5px;
     text-decoration: none;
     transition: 0.3s;
+    margin-top: 15px;
 }
 
 
@@ -568,7 +577,7 @@ textarea {
     ?>
 </div>
 <div class="view-more">
-    <a href="Publication1.php?user_id=<?= $recette['user_id'] ?>">
+    <a href="Publication2.php?user_id=<?= $recette['user_id'] ?>">
         <i class="material-icons" style =" color: #ff5722; margin-left: 420px;">arrow_forward</i>
     </a>
 </div>

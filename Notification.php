@@ -40,71 +40,75 @@ $notif_count = $stmt->fetchColumn();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="styles.css">
     <style>
-          /* Style de la sidebar */
-          .sidebar {
-            width: 250px;
+          /* Palette de couleurs modernes */
+        :root {
+            --primary-color: #FF6F61;
+            --secondary-color: #2E3B4E;
+            --accent-color: #4CAF50;
+            --text-color: #333;
+            --background-color: #F5F5F5;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
             height: 100vh;
             position: fixed;
-            background-color: #343a40;
+            background-color: var(--secondary-color);
             color: white;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 25px 20px;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Profil utilisateur */
-        .sidebar img {
+        .sidebar .text-center {
+            margin-bottom: 30px;
+        }
+
+        .sidebar .text-center img {
             width: 90px;
             height: 90px;
+            object-fit: cover;
             border-radius: 50%;
             margin-bottom: 10px;
-            border: 3px solid #ff5722;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .sidebar h6 {
-            font-size: 18px;
-            font-weight: bold;
+        .sidebar .text-center p {
             margin: 5px 0;
-        }
-
-        .sidebar p {
-            font-size: 14px;
+            font-weight: 500;
             color: #bbb;
         }
 
-        /* Liens de la sidebar */
-        .sidebar ul {
-            width: 100%;
-            padding: 0;
-            margin-top: 20px;
-        }
-
-        .sidebar ul li {
-            list-style: none;
-        }
-
         .sidebar ul li a {
-            color: white !important;
+            color: white;
             display: flex;
             align-items: center;
-            padding: 10px 15px;
+            padding: 12px 20px;
             text-decoration: none;
             transition: 0.3s;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
-            font-weight: 600;
-        }
-
-        .sidebar ul li a i {
-            font-size: 24px;
-            margin-right: 10px;
         }
 
         .sidebar ul li a:hover {
-            background-color: #ff5722;
-            transform: translateX(5px);
+            background-color: var(--primary-color);
+            transform: translateX(8px);
         }
+
+        .sidebar ul li a .material-icons {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .sidebar ul li a .badge {
+            background-color: var(--accent-color);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
 
         /* Badge de notification */
         .badge {
@@ -123,12 +127,28 @@ $notif_count = $stmt->fetchColumn();
             padding: 20px;
         }
 
-        h4 {
-            color: #343a40;
+        h3 {
+            font-size: 2.2rem;
             font-weight: bold;
-            margin-bottom: 20px;
+            color: var(--text-color);
+            text-align: center;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            padding-bottom: 15px;
         }
 
+        h3::after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: var(--primary-color);
+            margin-top: 10px;
+            margin-left: auto;
+            margin-right: auto;
+        }
         /* Liste des notifications */
         .collection {
             border: none;
@@ -155,20 +175,19 @@ $notif_count = $stmt->fetchColumn();
     </style>
 </head>
 <body>
-    <!-- Barre latérale -->
-    <div class="sidebar">
+     <!-- Barre latérale -->
+     <div class="sidebar">
+        
         <div class="text-center">
             <!-- Image de profil dynamique -->
-            <img src="<?= htmlspecialchars($user['photo'] ?? 'default.png') ?>" 
-                 alt="Avatar" class="rounded-circle">
-            <h6><?= htmlspecialchars($user['nom'] . " " . $user['prenom']) ?></h6>
+            <img src="<?= htmlspecialchars($user['photo'] ?? 'default.png') ?>" alt="Avatar" class="rounded-circle">
+            <p><?= htmlspecialchars($user['nom'] . " " . $user['prenom']) ?></p>
             <p><?= htmlspecialchars($user['email']) ?></p>
         </div>
 
         <ul class="nav flex-column">
             <li class="nav-item"><a href="Accueil.php" class="nav-link"><i class="material-icons">home</i> Accueil</a></li>
             <li class="nav-item"><a href="Profil.php" class="nav-link"><i class="material-icons">person</i> Profil</a></li>
-            <li class="nav-item"><a href="Favoris.php" class="nav-link"><i class="material-icons">favorite</i> Favoris</a></li>
             <li class="nav-item"><a href="Enregistrement.php" class="nav-link"><i class="material-icons">bookmark</i> Enregistrements</a></li>
 
             <?php if (isset($_SESSION['user_id'])): ?>
@@ -190,7 +209,7 @@ $notif_count = $stmt->fetchColumn();
     </div>
 
     <div class="container">
-    <h4 style= "text-align: center;">Notifications</h4>
+    <h3>Mes Notifications</h3>
     <ul class="collection">
         <?php foreach ($notifications as $notif): ?>
             <li class="collection-item" 

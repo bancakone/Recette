@@ -1,47 +1,44 @@
 <?php
 session_start();
-include('config.php'); // Connexion à la base de données
+include('config.php');
 
-// Vérifie si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
-    header('Location: Connexion.php');
-    exit();
+    die("Vous devez être connecté pour voir vos favoris.");
 }
 
 $user_id = $_SESSION['user_id'];
-// $user_id = $_GET['user_id'];
 
-// Récupérer les infos utilisateur
-$sql_user = "SELECT nom, prenom, email , photo FROM users WHERE id = :user_id";
+// Récupérer les informations de l'utilisateur
+$sql_user = "SELECT nom, prenom, email, photo FROM users WHERE id = :user_id";
 $stmt_user = $pdo->prepare($sql_user);
 $stmt_user->execute(['user_id' => $user_id]);
 $user = $stmt_user->fetch();
 
-// Récupérer les recettes publiées par l'utilisateur
-$sql = "SELECT * FROM recettes WHERE user_id = :user_id AND statut = 'publie' ORDER BY date_creation DESC";
-$stmt = $pdo->prepare($sql);
-$stmt->execute(['user_id' => $user_id]);
-$recettes = $stmt->fetchAll();
+// Récupérer les favoris de l'utilisateur
+$sql_favoris = "SELECT r.* FROM recettes r JOIN favoris f ON r.id = f.recette_id WHERE f.user_id = :user_id";
+$stmt_favoris = $pdo->prepare($sql_favoris);
+$stmt_favoris->execute(['user_id' => $user_id]);
+$favoris = $stmt_favoris->fetchAll();
 
 // Notifications
 $sql = "SELECT COUNT(*) FROM notifications WHERE user_id = :user_id AND lu = FALSE";
 $stmt = $pdo->prepare($sql);
 $stmt->execute(['user_id' => $_SESSION['user_id']]);
 $notif_count = $stmt->fetchColumn();
-
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mes Publications</title>
+    <title>Mes Favoris</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="CSS/Publication1.css">
-<style>
-    /* Palette de couleurs modernes */
-    :root {
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Palette de couleurs modernes */
+        :root {
             --primary-color: #FF6F61;
             --secondary-color: #2E3B4E;
             --accent-color: #4CAF50;
@@ -66,20 +63,18 @@ $notif_count = $stmt->fetchColumn();
         }
 
         .sidebar .text-center img {
-            width: 100px;
+            width: 90px;
             height: 90px;
             object-fit: cover;
             border-radius: 50%;
             margin-bottom: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin-left: 50px;
         }
 
         .sidebar .text-center p {
-            margin : 1px 0 0 45px;
-            font-weight: 100;
-            font-size: 15px;
-            color:#bbb ;
+            margin: 5px 0;
+            font-weight: 500;
+            color: #bbb;
         }
 
         .sidebar ul li a {
@@ -110,6 +105,16 @@ $notif_count = $stmt->fetchColumn();
             font-size: 12px;
             margin-left: 10px;
         }
+
+        /* Contenu principal */
+        .container {
+            margin-left: 270px;
+            width: calc(100% - 270px);
+            padding: 30px;
+            background-color: var(--background-color);
+            min-height: 100vh;
+        }
+
         h3 {
             font-size: 2.2rem;
             font-weight: bold;
@@ -133,12 +138,87 @@ $notif_count = $stmt->fetchColumn();
             margin-right: auto;
         }
 
-</style>
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .card {
+            width: 250px;
+            background-color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            cursor: pointer;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-body h5 {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .card-body p {
+            font-size: 14px;
+            color: #777;
+            margin-top: 10px;
+        }
+
+        /* Mise en forme des messages d'alerte */
+        p.text-center {
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: 600;
+            margin-top: 40px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Effet sur les boutons */
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--accent-color);
+        }
+    </style>
 </head>
 <body>
 
-   <!-- Barre latérale -->
-   <div class="sidebar">
+<div class="d-flex">
+    <!-- Barre latérale -->
+    <div class="sidebar">
         <div class="text-center">
             <!-- Image de profil dynamique -->
             <img src="<?= htmlspecialchars($user['photo'] ?? 'default.png') ?>" alt="Avatar" class="rounded-circle">
@@ -168,45 +248,38 @@ $notif_count = $stmt->fetchColumn();
             <li class="nav-item"><a href="Deconnexion.php" class="nav-link"><i class="material-icons">exit_to_app</i> Déconnexion</a></li>
         </ul>
     </div>
+
     <!-- Contenu principal -->
-    <div class="content">
-    <h3>Mes Publications</h3>
+    <div class="container mt-4">
+        <h3>Mes Favoris</h3>
         <div class="row">
-            <?php if (!empty($recettes)): ?>
-                <?php foreach ($recettes as $recette): ?>
-                    <div class="col s12 m6 l3">
-    <div class="card">
-        <div class="card-image">
-            <a href="Recette.php?id=<?php echo $recette['id']; ?>">
-                <img src="<?php echo $recette['photo']; ?>" alt="Image de la recette">
-            </a>
-        </div>
-        <div class="card-content">
-            <p><?php echo htmlspecialchars($recette['titre']); ?></p>
-        </div>
-        <div class="card-action">
-            <a href="ModifierRecette.php?id=<?php echo $recette['id']; ?>" class="btn blue lighten-1 waves-effect waves-light">
-                <i class="material-icons center">edit</i>
-            </a>
-            <a href="SupprimerRecette.php?id=<?php echo $recette['id']; ?>" class="btn red darken-1 waves-effect waves-light">
-                <i class="material-icons center">delete</i>
-            </a>
+            <?php if (count($favoris) > 0): ?>
+                <?php foreach ($favoris as $recette): ?>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <a href="Recette.php?id=<?= $recette['id'] ?>">
+                                <img src="<?= htmlspecialchars($recette['photo']) ?>" class="card-img-top" alt="Recette">
+                            </a>
+                            <div class="card-body">
+                                <p><?= htmlspecialchars($recette['titre']) ?></p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>Vous n'avez pas encore de favoris.</p>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>Vous n'avez aucune recette publiée pour le moment.</p>
-            <?php endif; ?>
-        </div>
-
-        <!-- Bouton d'ajout flottant
-        <a href="AjouterRecette.php" class="btn-floating btn-large red waves-effect waves-light">
-            <i class="material-icons">add</i>
-        </a> -->
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>
+
+<?php if (isset($_SESSION['user_id'])): // Afficher la section publication uniquement si l'utilisateur est connecté ?>
+                <li><a href="Brouillons.php" class="black-text"><i class="material-icons">save</i> Brouillons</a></li>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['user_id'])): // Afficher la section publication uniquement si l'utilisateur est connecté ?>
+                <li><a href="Publication.php" class="black-text"><i class="material-icons">post_add</i> Publication</a></li>
+            <?php endif; ?>
