@@ -132,7 +132,16 @@ $notif_count = $stmt->fetchColumn();
             margin-left: auto;
             margin-right: auto;
         }
-
+  
+.card .card-content{
+    text-align: center;
+    padding: 10px;
+}
+.card .card-action{
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 90px;
+}
 </style>
 </head>
 <body>
@@ -181,7 +190,7 @@ $notif_count = $stmt->fetchColumn();
                 <img src="<?php echo $recette['photo']; ?>" alt="Image de la recette">
             </a>
         </div>
-        <div class="card-content">
+        <div class="card-content" style="font-size: 1px;">
             <p><?php echo htmlspecialchars($recette['titre']); ?></p>
         </div>
         <div class="card-action">

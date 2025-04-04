@@ -25,13 +25,6 @@ body {
     object-fit: cover;
 }
 
-.card-content {
-    flex-grow: 1;
-    text-align: center;
-    padding: 5px; /* Réduit l'espacement interne */
-    max-width: 80%; /* Réduit la largeur du contenu à 80% */
-    margin: 0 auto; /* Centre le contenu à l'intérieur de la carte */
-}
 
 
 .card-action {

@@ -95,8 +95,6 @@ if (isset($_SESSION['user_id'])) {
     <title><?= htmlspecialchars($recette['titre']) ?></title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
-
  <link rel="stylesheet" href="CSS/Recette.css">
  <style>
 .details-container {
@@ -208,11 +206,7 @@ if (isset($_SESSION['user_id'])) {
         <i class="material-icons save-icon <?= $estEnregistre ? 'active' : '' ?>" data-id="<?= $recette_id ?>">bookmark</i>
         
 
-        <a href="#" id="capture-btn" class="btn-small blue" title="Télécharger capture">
-    <i class="material-icons">cloud_download</i>
-</a>
-
-
+        <i class="material-icons">cloud_download</i>
     </div>
 </div>
 
@@ -310,12 +304,13 @@ if (isset($_SESSION['user_id'])) {
 <div class="published-container">
     <p>Publié par <span class="author-name"><?= htmlspecialchars($recette1['nom'] . ' ' . $recette1['prenom']) ?></span> 
        le <?= date('d/m/Y H:i', strtotime($recette['date_creation'])) ?></p>
-   
+       <button class="btn red" onclick="window.history.back()">Retour</button>
+
 </div>
 
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+
     <script>
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll(".favorite-icon").forEach(icon => {
@@ -436,19 +431,12 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
-document.getElementById('capture-btn').addEventListener('click', function() {
-    // Cibler l'élément que tu souhaites capturer, par exemple la page entière
-    html2canvas(document.body).then(function(canvas) {
-        // Créer un lien pour télécharger l'image
-        var link = document.createElement('a');
-        link.download = 'capture.png'; // Nom du fichier image
-        link.href = canvas.toDataURL(); // Convertir le canvas en URL de données (base64)
-        link.click(); // Déclencher le téléchargement
-    });
-});
 
 
 </script>
+
+</script>
+
 
 </body>
 </html>

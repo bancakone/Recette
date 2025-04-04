@@ -2,9 +2,12 @@
 session_start();
 include('config.php');
 
+// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
-    die("Vous devez être connecté pour voir vos favoris.");
+    header("Location: Connexion.php"); // Rediriger vers la page de connexion si non connecté
+    exit();
 }
+
 
 $user_id = $_SESSION['user_id'];
 
@@ -169,9 +172,8 @@ $notif_count = $stmt->fetchColumn();
             cursor: pointer;
             border-bottom: 2px solid var(--secondary-color);
         }
-
         .card-body {
-            padding: 20px;
+            padding: 10px;
         }
 
         .card-body h5 {
@@ -183,10 +185,21 @@ $notif_count = $stmt->fetchColumn();
         }
 
         .card-body p {
-            font-size: 14px;
-            color: #777;
+            font-size: 16px;
+            color: black;
             margin-top: 10px;
+            font-weight: bold;
         }
+
+        /* Mise en forme des messages d'alerte */
+        p.text-center {
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: 600;
+            margin-top: 40px;
+            font-family: 'Poppins', sans-serif;
+        }
+
 
         .badge {
             background-color: var(--accent-color);
@@ -239,7 +252,7 @@ $notif_count = $stmt->fetchColumn();
         <div class="row">
             <?php if (count($favoris) > 0): ?>
                 <?php foreach ($favoris as $recette): ?>
-                    <div class="col-md-4">
+                    <div class="col-md-3 mb-4">
                         <div class="card">
                             <a href="Recette.php?id=<?= $recette['id'] ?>">
                                 <img src="<?= htmlspecialchars($recette['photo']) ?>" class="card-img-top" alt="Recette">

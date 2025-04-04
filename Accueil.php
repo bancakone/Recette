@@ -123,300 +123,66 @@ $nb_abonnes = $stmt_abonnes->fetchColumn();
     <title>Tableau de Bord - Recettes</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <!-- <link rel="stylesheet" href="CSS/Accueil1.css"> -->
-    <style>
-          /* Ajout de styles personnalisés */
-  body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f9f9f9;
-  }
-
-  .sidebar {
-    background-color: #37474F; /* Couleur plus foncée pour un meilleur contraste */
-    padding: 18px;
-    height: 100vh;
-    color: #fff;
-    position: fixed;
-    width: 250px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-  }
-
-  .sidebar .profile {
-    margin-bottom: 1px;
-    text-align: center;
-    width: 100%;
-  }
-
-  .sidebar img {
-    border-radius: 50%;
-    margin-bottom: 1px;
-    width: 100px;
-    height: 100px;
-    border: 3px solid #ff5722;
-  }
-
-  .sidebar h2 {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 5px 0;
-    color: #ffffff;
-  }
-
-  .sidebar p {
-    font-size: 14px;
-    margin: 0;
-    color: #cfd8dc;
-  }
-
-  .sidebar ul {
-    padding: 0;
-    list-style: none;
-    width: 90%;
-  }
-
-  .sidebar ul li {
-    width: 100%;
-  }
-
-  .sidebar ul li a {
-    color: white !important;
-    display: flex;
-    align-items: center;
-    padding: 9px 10px;
-    text-decoration: none;
-    transition: 0.3s;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 500;
-  }
-
-  .sidebar ul li a:hover {
-    background-color: #ff5722;
-    transform: translateX(5px);
-  }
-
-  .sidebar ul li a .material-icons {
-    margin-right: 15px;
-    font-size: 20px;
-  }
-
-  .content {
-    margin-left: 270px;
-    padding: 30px;
-  }
-
-  .carousel {
-    margin-bottom: 30px;
-  }
-
-  .grid {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-
-  .card {
-    width: 22%;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
-    border-radius: 15px;
-    overflow: hidden;
-  }
-
-  .card img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-  }
-
-  .card p {
-  padding: 5px;
-  text-align: center;
-  font-weight: bold;
-  color: #37474F;
-  transition: color 0.3s ease-in-out, transform 0.3s ease-in-out; /* Animation fluide */
-}
-
-.card p:hover {
-  color: #ff5722; /* Change la couleur du texte */
-  transform: scale(1.1); /* Agrandit légèrement le texte */
-}
-
-
-  .card:hover {
-    transform: scale(1.05);
-  }
-
-  .view-more {
-    text-align: center;
-    margin-top: 20px;
-  }
-
-  .view-more a {
-    text-decoration: none;
-    color: #000;
-    font-size: 24px;
-    transition: 0.3s;
-  }
-
-  .view-more a:hover {
-    color: #f00;
-  }
-
-  .btn-floating {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background-color: #ff5722;
-  }
-
-  .header-icons {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-  }
-
-  .search-bar {
-    display: flex;
-    align-items: center;
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-
-  .search-bar i {
-    margin-right: 10px;
-  }
-
- 
-  .dropdown-trigger {
-  display: flex;
-  align-items: center; /* Aligne verticalement l'icône */
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
-
-.dropdown-trigger:hover {
-  background-color: rgba(255, 87, 34, 0.1); /* Fond léger au survol */
-  transform: scale(1.1); /* Agrandit légèrement */
-}
-
-.dropdown-content {
-  display: none; /* Caché par défaut */
-  position: absolute;
-  background-color: white;
-  border-radius: 5px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  min-width: 150px;
-  z-index: 1000; /* S'assurer qu'il est au-dessus des autres éléments */
-}
-
-
-
-  .abonnements-info {
-    margin-top: 10px;
-    text-align: center;
-    color: #cfd8dc;
-}
-
-.abonnements-info p {
-    margin: 5px 0;
-    font-size: 14px;
-    font-weight: bold;
-}
-.search-bar {
-    display: flex;
-    align-items: center;
-    background: white;
-    padding: 5px 10px;
-    border-radius: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    max-width: 250px; /* Réduit la largeur */
-}
-
-.search-bar i {
-    font-size: 18px;
-    color: gray;
-    margin-right: 5px;
-}
-
-.search-bar input {
-    border: none;
-    outline: none;
-    flex: 1;
-    font-size: 14px;
-}
-h5 {
-  font-size: 1.5rem; /* Taille du texte */
-  font-weight: bold; /* Texte en gras */
-  color: #333; /* Couleur du texte */
-  text-transform: uppercase; /* Mettre en majuscules */
-  border-left: 4px solid #ff5722; /* Bordure gauche pour l'accent */
-  padding-left: 10px; /* Espacement du texte par rapport à la bordure */
-  margin-bottom: 15px; /* Espacement avec les éléments en dessous */
-  font-family: 'Arial', sans-serif; /* Police de caractères */
-}
-h5:hover {
-  color: #ff5722; /* Change la couleur du texte */
-  border-left-color: #333; /* Change la couleur de la bordure */
-  transform: translateX(5px); /* Déplace légèrement le titre vers la droite */
-}
-.right-items {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* Espacement entre les éléments */
-}
-
-.right-items span {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #37474F;
-  transition: color 0.3s ease-in-out;
-}
-
-.right-items a {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  padding: 5px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
-
-.right-items a i {
-  font-size: 24px;
-  color: #37474F;
-  transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
-
-/* Effet hover */
-.right-items span:hover {
-  color: #ff5722; /* Change la couleur du texte */
-}
-
-.right-items a:hover {
-  background-color: rgba(255, 87, 34, 0.1); /* Léger fond coloré */
-  transform: scale(1.1); /* Agrandit légèrement l'élément */
-}
-
-.right-items a:hover i {
-  color: #ff5722; /* Change la couleur de l'icône */
-  transform: rotate(10deg); /* Fait pivoter légèrement l'icône */
-}
-
-
-    </style>
+     <link rel="stylesheet" href="CSS/Accueil.css">  
 </head>
+<style>
+ /* Barre de recherche */
+ .search-bar {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 10px;
+            border-radius: 25px;
+            background: #f1f1f1;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-bar i {
+            margin-right: 10px;
+            color: #007bff;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            flex: 1;
+            background: transparent;
+            font-size: 16px;
+        }
+
+        /* Conteneur des résultats */
+        #resultats {
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        /* Style des résultats */
+        .result-card {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .result-card a {
+            text-decoration: none;
+            font-weight: bold;
+            color: #007bff;
+        }
+</style>
 <body>
     <div class="sidebar">
         <div class="profile">
@@ -452,21 +218,21 @@ h5:hover {
                 <li><a href="Publication.php" class="black-text"><i class="material-icons">post_add</i> Publication</a></li>
             <?php endif; ?>
 
-            <li><a href="Deconnexion.php" class="black-text"><i class="material-icons">exit_to_app</i> Déconnexion</a></li>
             <li>
-              <a href="Notification.php">
-                  <i class="material-icons">notifications</i> Notifications
-                  <?php if ($notif_count > 0): ?>
-                      <span class="new badge red" data-badge-caption=""><?php echo $notif_count; ?></span>
-                  <?php endif; ?>
-              </a>
-            </li>
-
-
-
-            <?php if (isset($_SESSION['user_id'])): ?>
-             <li><a href="Historique.php" class="black-text"><i class="material-icons">history</i> Historique</a></li>
-            <?php endif; ?>
+                <a href="Notification.php">
+                    <i class="material-icons">notifications</i> Notifications
+                    <?php if ($notif_count > 0): ?>
+                        <span class="new badge red" data-badge-caption=""><?php echo $notif_count; ?></span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                
+                
+                
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <li><a href="Historique.php" class="black-text"><i class="material-icons">history</i> Historique</a></li>
+                    <?php endif; ?>
+                    <li><a href="Deconnexion.php" class="black-text"><i class="material-icons">exit_to_app</i> Déconnexion</a></li>
         </ul>
     </div>
 
@@ -488,11 +254,14 @@ h5:hover {
 
         <div class="header-icons">
             <div class="left-items">
-              <div class="search-bar">
-                  <i class="material-icons">search</i>
-                  <input type="text" id="search" name="query" placeholder="Rechercher..." required>
-              </div>
-              <div id="resultats"></div>
+              <!-- Barre de recherche -->
+<div class="search-bar">
+    <i class="material-icons">search</i>
+    <input type="text" id="search" name="query" placeholder="Rechercher..." required>
+</div>
+
+<!-- Conteneur pour afficher les résultats -->
+<div id="resultats"></div>
 
 
 
@@ -527,8 +296,13 @@ h5:hover {
           
         </div>
         <div class="view-more">
-            <a href="Actualité.php"><i class="material-icons">arrow_forward</i></a>
-        </div>
+    <?php if (isset($_SESSION['user_id'])): ?>
+        <a href="Actualité.php"><i class="material-icons">arrow_forward</i></a>
+    <?php else: ?>
+        <a href="Actualité1.php"><i class="material-icons">arrow_forward</i></a>
+    <?php endif; ?>
+</div>
+
 
 
             <h5>Recherches Récentes</h5>
@@ -599,7 +373,20 @@ h5:hover {
         M.Dropdown.init(elems);
     });
 
+document.getElementById("search").addEventListener("input", function() {
+    let query = this.value.trim();
 
+    if (query.length > 1) { // Pour éviter les requêtes trop courtes
+        fetch("Recherche.php?q=" + encodeURIComponent(query))
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById("resultats").innerHTML = data;
+        })
+        .catch(error => console.error("Erreur de recherche :", error));
+    } else {
+        document.getElementById("resultats").innerHTML = "";
+    }
+});
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     

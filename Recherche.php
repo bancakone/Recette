@@ -10,46 +10,56 @@ require 'config.php'; // Connexion à la base de données
     <title>Recherche de Recettes</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <style>
-       .card-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: stretch;
-}
+    /* Conteneur des cartes */
+    .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            padding: 10px;
+        }
 
-.card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    text-align: center;
-    padding-bottom: 15px;
-}
+        /* Style de la carte */
+        .card {
+            width: 450px; /* Largeur uniforme */
+            height: 350px; /* Hauteur fixe */
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding-bottom: 10px;
+        }
 
+        /* Image des recettes */
         .card img {
             width: 100%;
-            height: auto;
+            height: 300px; /* Hauteur fixe */
+            object-fit: cover; /* Ajuste bien l'image sans la déformer */
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
         }
 
-        .card-title {
-            font-size: 18px;
+        /* Titre de la recette */
+        .card .card-title {
+            font-size: 20px;
             font-weight: bold;
-            color: #007bff; /* Bleu Bootstrap */
+            color:black;
             margin-top: 10px;
+            padding: 0 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
         }
 
+        /* Lien de la recette */
         .card a {
-            display: block;
             text-decoration: none;
-            font-weight: bold;
-            color: #007bff;
-            margin-top: 5px;
-        }
-
-        .container {
-            margin-top: 20px;
+            color: inherit;
         }
     </style>
 </head>
@@ -57,7 +67,7 @@ require 'config.php'; // Connexion à la base de données
 <div class="container">
     <div class="row card-container"> <!-- Conteneur flex pour bien organiser les cartes -->
         <?php
-        require 'config.php'; // Connexion à la base de données
+        
 
         if (isset($_GET['q']) && !empty($_GET['q'])) {
             $q = htmlspecialchars($_GET['q']);
@@ -70,14 +80,14 @@ require 'config.php'; // Connexion à la base de données
             if ($recettes) {
                 foreach ($recettes as $recette) {
                     echo "
-                        <div class='col s12 m6 l3'> <!-- Adaptatif selon la taille de l'écran -->
+                        
                             <div class='card'>
                                 <a href='Recette.php?id={$recette['id']}'>
                                     <img src='".htmlspecialchars($recette['photo'])."' alt='".htmlspecialchars($recette['titre'])."'>
                                     <p class='card-title'>".htmlspecialchars($recette['titre'])."</p>
                                 </a>
                             </div>
-                        </div>
+                       
                     ";
                 }
             } else {

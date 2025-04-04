@@ -99,7 +99,7 @@ p.subtitle {
         <p>Explorez des recettes simples et délicieuses pour toutes les occasions.</p>
         <p class="subtitle">Faites plaisir à vos papilles !</p>
         <!-- Bouton Démarrer qui redirige vers la page d'accueil -->
-        <a href="accueil.html" class="btn-start">Démarrer</a>
+        <a href="Accueil.php" class="btn-start">Démarrer</a>
     </div>
     <div class="background-container"></div>
 

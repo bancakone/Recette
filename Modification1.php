@@ -94,7 +94,7 @@ if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingr
             }
 
             // ✅ Redirection après succès
-            header('Location: Accueil.php');
+            header('Location: Admin1.php');
             exit;
         } else {
             echo "❌ Erreur lors du téléchargement de l'image.";
@@ -176,7 +176,7 @@ if (isset($_POST['titre'], $_POST['description'], $_FILES['photo'], $_POST['ingr
     <div class="right-section">
         <div class="container">
             <div class="header">
-                <a href="Accueil.php" class="material-icons">close</a>
+                <a href="Admin1.php" class="material-icons">close</a>
                 <span class="title" style="">Ajouter Recette</span>
             </div>
             

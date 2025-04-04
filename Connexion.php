@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Redirection selon le rôle
         if ($user['role'] === 'admin') {
-            header("Location: Admin.php"); // Page admin
+            header("Location: Admin1.php"); // Page admin
         } else {
             header("Location: Accueil.php"); // Page utilisateur
         }

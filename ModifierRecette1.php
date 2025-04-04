@@ -24,6 +24,7 @@ if (isset($_GET['id'])) {
         echo "Recette non trouvée.";
         exit();
     }
+
     // Définir la catégorie actuelle
     $categorie_id_actuelle = $recette['categorie_id'];
 
@@ -33,11 +34,11 @@ if (isset($_GET['id'])) {
         $description = $_POST['description'];
         $portions = $_POST['portions'];
         $duree = $_POST['duree'];
-        
+
         // Convertir les tableaux en chaînes
         $ingredients = implode(", ", $_POST['ingredients']);
         $methode = implode(", ", $_POST['methodes']);
-        
+
         // Gestion de l'image
         $image = $recette['photo']; // Image par défaut (ancienne image)
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {

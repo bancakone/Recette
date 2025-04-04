@@ -2,9 +2,12 @@
 session_start(); 
 include('config.php');  
 
-if (!isset($_SESSION['user_id'])) { 
-    die("Vous devez être connecté pour voir vos enregistrements."); 
-} 
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['user_id'])) {
+    header("Location: Connexion.php"); // Rediriger vers la page de connexion si non connecté
+    exit();
+}
+
 
 $user_id = $_SESSION['user_id'];  
 
@@ -162,14 +165,14 @@ $notif_count = $stmt->fetchColumn();
 
         .card img {
             width: 100%;
-            height: 200px;
+            height: 300px;
             object-fit: cover;
             cursor: pointer;
             border-bottom: 2px solid var(--secondary-color);
         }
 
         .card-body {
-            padding: 20px;
+            padding: 10px;
         }
 
         .card-body h5 {
@@ -250,6 +253,7 @@ $notif_count = $stmt->fetchColumn();
             <div class="cards-container">
                 <?php if (count($enregistrements) > 0): ?>
                     <?php foreach ($enregistrements as $recette): ?>
+                        <div class="col-md-3 mb-4">
                         <div class="card">
                             <a href="Recette.php?id=<?= $recette['id'] ?>">
                                 <img src="<?= htmlspecialchars($recette['photo']) ?>" class="card-img-top" alt="Recette">
@@ -258,10 +262,15 @@ $notif_count = $stmt->fetchColumn();
                                 <h5><?= htmlspecialchars($recette['titre']) ?></h5>
                             </div>
                         </div>
+                        </div>
                     <?php endforeach; ?>
-                <?php else: ?>
-                    <p style="text-align: center;">Vous n'avez pas encore d'enregistrements.</p>
-                <?php endif; ?>
+                    <?php else: ?>
+    <p class="message-aucun-enregistrement">
+        <i class="material-icons" style="vertical-align: middle; color: #FF6F61;">info</i>
+        Vous n'avez pas encore d'enregistrements.
+    </p>
+<?php endif; ?>
+
             </div>
         </div>
     </div>

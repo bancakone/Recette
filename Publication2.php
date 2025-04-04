@@ -133,7 +133,15 @@ $notif_count = $stmt->fetchColumn();
             margin-left: auto;
             margin-right: auto;
         }
-
+        .card .card-content{
+    text-align: center;
+    padding: 10px;
+}
+.card .card-action{
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 90px;
+}
     </style>
 </head>
 <body>
@@ -201,9 +209,17 @@ $notif_count = $stmt->fetchColumn();
             <?php endif; ?>
         </div>
 
-      
+        <div style="text-align: center; margin: 20px 0;">
+    <a href="javascript:history.back()" class="btn grey darken-2 waves-effect waves-light">
+        <i class="material-icons left">arrow_back</i> Retour
+    </a>
+</div>
+
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    
 </body>
+
+
 </html>

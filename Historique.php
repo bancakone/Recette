@@ -216,7 +216,8 @@ if (!empty($recette_ids)) {
 
     .card p {
         font-size: 14px;
-        color: #777;
+        color: black;
+        font-weight: bold;
         margin-top: 10px;
     }
 
@@ -293,7 +294,7 @@ if (!empty($recette_ids)) {
     <div class="grid">
         <?php if (count($historique_recettes) > 0): ?>
             <?php foreach ($historique_recettes as $recette_details): ?>
-                <div class="col-md-4">
+                <div class="col-md-3 mb-4">
                 <div class="card">
                     <a href="Recette.php?id=<?php echo $recette_details['id']; ?>">
                         <?php if (isset($recette_details['photo']) && $recette_details['photo'] != ''): ?>
